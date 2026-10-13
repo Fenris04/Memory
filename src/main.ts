@@ -1,18 +1,25 @@
 // Import the main SCSS stylesheet.
 import './styles/style.scss';
 
-// Import the HTML templates.
+// Import screen templates.
 import { renderHome } from './templates/home-template';
 import { renderSettings } from './templates/settings-template';
+import { renderGame } from './templates/game-template';
 
-// Import the settings utilities.
+// Import settings utilities.
 import {
   createDefaultSettings,
   getGameSettings
 } from './settings/settings-utils';
 
-// Import the settings interface.
+// Import game utilities.
+import { getThemeImages } from './game/card-assets';
+import { createCards } from './game/card-utils';
+import { getPairCount } from './game/board-utils';
+
+// Import TypeScript types.
 import type { GameSettings } from './settings/game-settings';
+import type { MemoryCard } from './game/card-types';
 
 // Find the main application container.
 const CONTENT: HTMLElement | null =
@@ -25,7 +32,7 @@ let gameSettings: GameSettings = createDefaultSettings();
  * Displays the home screen.
  *
  * Renders the home template and registers
- * the event listener for the Start Game button.
+ * the Start Game button event.
  *
  * @returns Nothing.
  */
@@ -35,21 +42,20 @@ function showHome(): void {
     return;
   }
 
-  // Insert the home screen into the container.
+  // Display the home screen.
   CONTENT.innerHTML = renderHome();
 
-  // Find the Start Game button.
+  // Register the Start Game button.
   const START_BUTTON: HTMLElement | null =
     document.getElementById('start-button');
 
-  // Navigate to the settings screen when clicked.
   START_BUTTON?.addEventListener('click', showSettings);
 }
 
 /**
  * Displays the settings screen.
  *
- * Renders the settings template and initializes
+ * Renders the settings template and registers
  * the navigation buttons.
  *
  * @returns Nothing.
@@ -60,67 +66,114 @@ function showSettings(): void {
     return;
   }
 
-  // Insert the settings screen into the container.
+  // Display the settings screen.
   CONTENT.innerHTML = renderSettings();
 
-  // Register the Back to Home button.
+  // Register the navigation buttons.
   setupBackButton();
-
-  // Register the Play Now button.
   setupPlayButton();
 }
 
 /**
- * Registers the Back to Home button event.
+ * Registers the Back to Home button.
  *
  * @returns Nothing.
  */
 function setupBackButton(): void {
-  // Find the Back to Home button.
   const BACK_BUTTON: HTMLElement | null =
     document.getElementById('back-button');
 
-  // Return to the home screen when clicked.
   BACK_BUTTON?.addEventListener('click', showHome);
 }
 
 /**
- * Registers the Play Now button event.
+ * Registers the Play Now button.
  *
  * @returns Nothing.
  */
 function setupPlayButton(): void {
-  // Find the Play Now button.
   const PLAY_BUTTON: HTMLElement | null =
     document.getElementById('play-button');
 
-  // Save the selected settings when clicked.
   PLAY_BUTTON?.addEventListener('click', saveGameSettings);
 }
 
 /**
- * Saves the currently selected game settings.
+ * Saves the selected settings and starts the game.
  *
  * Reads the selected player color, board size,
  * and card theme from the settings screen.
  *
- * The settings will later be used to initialize
- * the memory game.
- *
  * @returns Nothing.
  */
 function saveGameSettings(): void {
-  // Read all selected settings.
+  // Save the selected game configuration.
   gameSettings = getGameSettings();
 
-  // Display the settings in the browser console.
-  console.log('Saved game settings:', gameSettings);
+  // Open the game screen.
+  showGame();
+}
+
+/**
+ * Creates the cards for the selected game settings.
+ *
+ * Loads the selected theme images and determines
+ * how many matching pairs are required.
+ *
+ * @returns An array containing the memory cards.
+ */
+function createGameCards(): MemoryCard[] {
+  // Load the images for the selected theme.
+  const IMAGES: string[] = getThemeImages(gameSettings.theme);
+
+  // Determine the number of matching pairs.
+  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+
+  // Create two matching cards for each image.
+  return createCards(IMAGES, PAIR_COUNT);
+}
+
+/**
+ * Displays the Memory Game screen.
+ *
+ * Creates the cards and renders the game board
+ * using the selected board size and theme.
+ *
+ * @returns Nothing.
+ */
+function showGame(): void {
+  if (!CONTENT) {
+    return;
+  }
+
+  // Create the memory cards.
+  const CARDS: MemoryCard[] = createGameCards();
+
+  // Display the game board.
+  CONTENT.innerHTML = renderGame(CARDS, gameSettings.boardSize);
+
+  // Register the Exit Game button.
+  setupExitButton();
+}
+
+/**
+ * Registers the Exit Game button.
+ *
+ * Returns to the home screen when clicked.
+ *
+ * @returns Nothing.
+ */
+function setupExitButton(): void {
+  const EXIT_BUTTON: HTMLElement | null =
+    document.getElementById('exit-button');
+
+  EXIT_BUTTON?.addEventListener('click', showHome);
 }
 
 /**
  * Initializes the Memory Game application.
  *
- * Displays the home screen when the app starts.
+ * Displays the home screen when the application starts.
  *
  * @returns Nothing.
  */
