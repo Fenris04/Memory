@@ -14,7 +14,7 @@ import {
 
 // Import game utilities.
 import { getThemeImages } from './game/card-assets';
-import { createCards } from './game/card-utils';
+import { createCards, shuffleCards } from './game/card-utils';
 import { getPairCount } from './game/board-utils';
 
 // Import TypeScript types.
@@ -116,22 +116,25 @@ function saveGameSettings(): void {
 }
 
 /**
- * Creates the cards for the selected game settings.
+ * Creates and shuffles cards for the selected game settings.
  *
- * Loads the front and back images for the selected theme
- * and creates the required number of matching pairs.
+ * Loads the selected card designs, creates matching
+ * pairs, and randomizes their positions.
  *
- * @returns An array containing the memory cards.
+ * @returns An array containing shuffled Memory cards.
  */
 function createGameCards(): MemoryCard[] {
-  // Load the card designs for the selected theme.
+  // Load the selected card designs.
   const IMAGES: CardImages[] = getThemeImages(gameSettings.theme);
 
-  // Determine the number of matching pairs.
+  // Determine the required number of pairs.
   const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
 
-  // Create two matching cards for each design.
-  return createCards(IMAGES, PAIR_COUNT);
+  // Create matching cards.
+  const CARDS: MemoryCard[] = createCards(IMAGES, PAIR_COUNT);
+
+  // Randomize the card positions.
+  return shuffleCards(CARDS);
 }
 
 /**

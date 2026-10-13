@@ -35,3 +35,28 @@ export function createCards(
       createPair(cardImages, index)
   );
 }
+
+/**
+ * Shuffles Memory cards using the Fisher-Yates algorithm.
+ *
+ * Creates a copy to avoid modifying the original array.
+ *
+ * @param cards - The Memory cards to shuffle.
+ * @returns A new array containing the shuffled cards.
+ */
+export function shuffleCards(cards: MemoryCard[]): MemoryCard[] {
+  // Create a copy of the original cards.
+  const SHUFFLED_CARDS: MemoryCard[] = [...cards];
+
+  // Iterate backward through the array.
+  for (let index: number = SHUFFLED_CARDS.length - 1; index > 0; index--) {
+    // Choose a random position.
+    const RANDOM_INDEX: number = Math.floor(Math.random() * (index + 1));
+
+    // Swap the current card with the randomly selected card.
+    [SHUFFLED_CARDS[index], SHUFFLED_CARDS[RANDOM_INDEX]] =
+      [SHUFFLED_CARDS[RANDOM_INDEX], SHUFFLED_CARDS[index]];
+  }
+
+  return SHUFFLED_CARDS;
+}
