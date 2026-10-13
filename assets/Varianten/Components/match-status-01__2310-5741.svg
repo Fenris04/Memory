@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="124.0" height="124.0" viewBox="174.0 2410.0 124.0 124.0" fill="none" overflow="hidden"><defs><clipPath id="clip34_2317_5746">
+<rect width="66" height="70" fill="white" transform="translate(203 2437)" />
+</clipPath>
+<filter id="filter89_d_2317_5746" x="174" y="2410" width="136" height="136" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix" />
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+<feOffset dx="6" dy="6" />
+<feGaussianBlur stdDeviation="4" />
+<feComposite in2="hardAlpha" operator="out" />
+<feColorMatrix type="matrix" values="0 0 0 0 0.301961 0 0 0 0 0.835294 0 0 0 0 0.737255 0 0 0 0.3 0" />
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2317_5746" />
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2317_5746" result="shape" />
+</filter>
+</defs><g filter="url(#filter89_d_2317_5746)">
+<rect width="120" height="120" transform="matrix(-1 0 0 1 296 2412)" fill="white" shape-rendering="crispEdges" />
+<rect x="-2.5" y="2.5" width="115" height="115" transform="matrix(-1 0 0 1 291 2412)" stroke="#4DD5BC" stroke-width="5" shape-rendering="crispEdges" />
+<g clip-path="url(#clip34_2317_5746)">
+<path d="M203.027 2448.72L235.461 2437.18L268.768 2448.51L263.375 2491.35L235.461 2506.78L207.983 2491.55L203.027 2448.72Z" fill="#E23237" />
+<path d="M268.768 2448.51L235.461 2437.18V2506.78L263.375 2491.37L268.768 2448.51Z" fill="#B52E31" />
+<path d="M235.512 2445.31L215.302 2490.19L222.852 2490.06L226.909 2479.94H245.039L249.482 2490.19L256.698 2490.32L235.512 2445.31ZM235.564 2459.69L242.394 2473.94H229.554L235.564 2459.69Z" fill="white" />
+</g>
+</g>
+</svg>
