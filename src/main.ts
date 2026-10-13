@@ -5,6 +5,7 @@ import './styles/style.scss';
 import { renderHome } from './templates/home-template';
 import { renderSettings } from './templates/settings-template';
 import { renderGame } from './templates/game-template';
+import { renderScoreboard } from './templates/score-template';
 
 // Import settings utilities.
 import {
@@ -17,40 +18,48 @@ import { getThemeImages } from './game/card-assets';
 import { createCards, shuffleCards } from './game/card-utils';
 import { getPairCount } from './game/board-utils';
 
-// Import TypeScript types.
-import type { GameSettings } from './settings/game-settings';
-import type { CardImages, MemoryCard } from './game/card-types';
+// Import card interaction functions.
 import {
   resetCardInteractions,
   setupCardInteractions
 } from './game/card-interactions';
 
+// Import game state functions.
+import {
+  awardPoint,
+  createGameState,
+  switchPlayer,
+  tossCoin
+} from './game/game-state';
+
+// Import TypeScript types.
+import type { GameSettings } from './settings/game-settings';
+import type { CardImages, MemoryCard } from './game/card-types';
+import type { GameState } from './game/game-state';
+import type { CardInteractionEvents } from './game/card-interactions';
 
 // Find the main application container.
 const CONTENT: HTMLElement | null =
   document.getElementById('main-container');
 
-// Store the current game settings.
+// Store the selected game settings.
 let gameSettings: GameSettings = createDefaultSettings();
+
+// Store the current game state.
+let gameState: GameState | null = null;
 
 /**
  * Displays the home screen.
  *
- * Renders the home template and registers
- * the Start Game button event.
- *
  * @returns Nothing.
  */
 function showHome(): void {
-  // Stop if the main container does not exist.
   if (!CONTENT) {
     return;
   }
 
-  // Display the home screen.
   CONTENT.innerHTML = renderHome();
 
-  // Register the Start Game button.
   const START_BUTTON: HTMLElement | null =
     document.getElementById('start-button');
 
@@ -60,21 +69,15 @@ function showHome(): void {
 /**
  * Displays the settings screen.
  *
- * Renders the settings template and registers
- * the navigation buttons.
- *
  * @returns Nothing.
  */
 function showSettings(): void {
-  // Stop if the main container does not exist.
   if (!CONTENT) {
     return;
   }
 
-  // Display the settings screen.
   CONTENT.innerHTML = renderSettings();
 
-  // Register the navigation buttons.
   setupBackButton();
   setupPlayButton();
 }
@@ -100,77 +103,138 @@ function setupPlayButton(): void {
   const PLAY_BUTTON: HTMLElement | null =
     document.getElementById('play-button');
 
-  PLAY_BUTTON?.addEventListener('click', saveGameSettings);
+  PLAY_BUTTON?.addEventListener('click', startGame);
 }
 
 /**
- * Saves the selected settings and starts the game.
+ * Creates and shuffles the Memory cards.
  *
- * Reads the selected player color, board size,
- * and card theme from the settings screen.
+ * @returns An array containing shuffled cards.
+ */
+function createGameCards(): MemoryCard[] {
+  const IMAGES: CardImages[] = getThemeImages(gameSettings.theme);
+  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+  const CARDS: MemoryCard[] = createCards(IMAGES, PAIR_COUNT);
+
+  return shuffleCards(CARDS);
+}
+
+/**
+ * Starts a new game with the selected settings.
+ *
+ * Uses a coin toss to choose the starting player.
  *
  * @returns Nothing.
  */
-function saveGameSettings(): void {
-  // Save the selected game configuration.
+function startGame(): void {
   gameSettings = getGameSettings();
 
-  // Open the game screen.
+  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+
+  gameState = createGameState(PAIR_COUNT, tossCoin());
+
   showGame();
 }
 
 /**
- * Creates and shuffles cards for the selected game settings.
+ * Updates the scoreboard without rebuilding the cards.
  *
- * Loads the selected card designs, creates matching
- * pairs, and randomizes their positions.
- *
- * @returns An array containing shuffled Memory cards.
+ * @returns Nothing.
  */
-function createGameCards(): MemoryCard[] {
-  // Load the selected card designs.
-  const IMAGES: CardImages[] = getThemeImages(gameSettings.theme);
+function updateScoreboard(): void {
+  if (!gameState) {
+    return;
+  }
 
-  // Determine the required number of pairs.
-  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+  const SCOREBOARD: HTMLElement | null =
+    document.querySelector('.scoreboard');
 
-  // Create matching cards.
-  const CARDS: MemoryCard[] = createCards(IMAGES, PAIR_COUNT);
+  if (!SCOREBOARD) {
+    return;
+  }
 
-  // Randomize the card positions.
-  return shuffleCards(CARDS);
+  SCOREBOARD.outerHTML = renderScoreboard(
+    gameState,
+    gameSettings.playerColor
+  );
+}
+
+/**
+ * Awards a point for a matching pair.
+ *
+ * The current player keeps their turn.
+ *
+ * @returns Nothing.
+ */
+function handleGameMatch(): void {
+  if (!gameState) {
+    return;
+  }
+
+  awardPoint(gameState);
+  updateScoreboard();
+}
+
+/**
+ * Switches players after a missed pair.
+ *
+ * @returns Nothing.
+ */
+function handleGameMiss(): void {
+  if (!gameState) {
+    return;
+  }
+
+  switchPlayer(gameState);
+  updateScoreboard();
+}
+
+/**
+ * Registers the game events.
+ *
+ * @param cards - All cards in the current game.
+ * @returns Nothing.
+ */
+function setupGameEvents(cards: MemoryCard[]): void {
+  const EVENTS: CardInteractionEvents = {
+    onMatch: handleGameMatch,
+    onMiss: handleGameMiss
+  };
+
+  setupCardInteractions(cards, EVENTS);
 }
 
 /**
  * Displays the Memory Game screen.
  *
- * Creates the cards, renders the game board,
- * and registers the card and exit interactions.
- *
  * @returns Nothing.
  */
 function showGame(): void {
-  if (!CONTENT) {
+  if (!CONTENT || !gameState) {
     return;
   }
 
-  // Create the Memory cards.
   const CARDS: MemoryCard[] = createGameCards();
 
-  // Display the game board.
-  CONTENT.innerHTML = renderGame(CARDS, gameSettings.boardSize);
+  CONTENT.innerHTML = renderGame(CARDS, gameSettings, gameState);
 
-  // Register the card click events.
-  setupCardInteractions(CARDS);
-
-  // Register the Exit Game button.
+  setupGameEvents(CARDS);
   setupExitButton();
 }
 
 /**
- * Registers the Exit Game button.
+ * Exits the current game safely.
  *
- * Returns to the home screen when clicked.
+ * @returns Nothing.
+ */
+function exitGame(): void {
+  resetCardInteractions();
+  gameState = null;
+  showHome();
+}
+
+/**
+ * Registers the Exit Game button.
  *
  * @returns Nothing.
  */
@@ -184,24 +248,9 @@ function setupExitButton(): void {
 /**
  * Initializes the Memory Game application.
  *
- * Displays the home screen when the application starts.
- *
  * @returns Nothing.
  */
 function init(): void {
-  showHome();
-}
-
-/**
- * Exits the current game safely.
- *
- * Cancels pending card timers before returning
- * to the home screen.
- *
- * @returns Nothing.
- */
-function exitGame(): void {
-  resetCardInteractions();
   showHome();
 }
 

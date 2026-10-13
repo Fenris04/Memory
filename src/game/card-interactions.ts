@@ -3,6 +3,14 @@ import type { MemoryCard } from './card-types';
 // Define how long mismatched cards remain visible.
 const FLIP_BACK_DELAY: number = 1000;
 
+/**
+ * Defines the events reported by the card interactions.
+ */
+export interface CardInteractionEvents {
+  onMatch: () => void;
+  onMiss: () => void;
+}
+
 // Store the currently revealed cards.
 let revealedCards: HTMLButtonElement[] = [];
 
@@ -36,6 +44,24 @@ function hideCard(card: HTMLButtonElement): void {
 }
 
 /**
+ * Finds a Memory card by its HTML element.
+ *
+ * @param element - The selected card button.
+ * @param cards - All cards in the current game.
+ * @returns The matching card data or undefined.
+ */
+function findCard(
+  element: HTMLButtonElement,
+  cards: MemoryCard[]
+): MemoryCard | undefined {
+  const CARD_ID: number = Number(element.dataset.cardId);
+
+  return cards.find(
+    (card: MemoryCard): boolean => card.id === CARD_ID
+  );
+}
+
+/**
  * Checks whether two cards belong to the same pair.
  *
  * @param first - The first revealed card.
@@ -48,14 +74,8 @@ function isMatchingPair(
   second: HTMLButtonElement,
   cards: MemoryCard[]
 ): boolean {
-  const FIRST_ID: number = Number(first.dataset.cardId);
-  const SECOND_ID: number = Number(second.dataset.cardId);
-
-  const FIRST_CARD: MemoryCard | undefined =
-    cards.find((card: MemoryCard): boolean => card.id === FIRST_ID);
-
-  const SECOND_CARD: MemoryCard | undefined =
-    cards.find((card: MemoryCard): boolean => card.id === SECOND_ID);
+  const FIRST_CARD: MemoryCard | undefined = findCard(first, cards);
+  const SECOND_CARD: MemoryCard | undefined = findCard(second, cards);
 
   return Boolean(
     FIRST_CARD &&
@@ -66,9 +86,6 @@ function isMatchingPair(
 
 /**
  * Marks two matching cards as completed.
- *
- * Matching cards remain visible and cannot
- * be selected again.
  *
  * @param first - The first matching card.
  * @param second - The second matching card.
@@ -90,9 +107,6 @@ function markMatchedCards(
 /**
  * Hides two cards that do not match.
  *
- * Resets the board lock and clears
- * the active timer.
- *
  * @returns Nothing.
  */
 function hideMismatchedCards(): void {
@@ -104,28 +118,28 @@ function hideMismatchedCards(): void {
 }
 
 /**
- * Evaluates the two currently revealed cards.
+ * Handles two matching cards.
  *
- * Keeps matching cards visible or temporarily
- * locks the board until mismatched cards are hidden.
- *
- * @param cards - All cards in the current game.
+ * @param events - The registered game events.
  * @returns Nothing.
  */
-function checkRevealedCards(cards: MemoryCard[]): void {
-  // Get the two currently revealed cards.
+function handleMatch(events: CardInteractionEvents): void {
   const [FIRST_CARD, SECOND_CARD] = revealedCards;
 
-  // Keep matching cards visible.
-  if (isMatchingPair(FIRST_CARD, SECOND_CARD, cards)) {
-    markMatchedCards(FIRST_CARD, SECOND_CARD);
-    return;
-  }
+  markMatchedCards(FIRST_CARD, SECOND_CARD);
+  events.onMatch();
+}
 
-  // Lock the board to prevent additional clicks.
+/**
+ * Handles two cards that do not match.
+ *
+ * @param events - The registered game events.
+ * @returns Nothing.
+ */
+function handleMiss(events: CardInteractionEvents): void {
   isBoardLocked = true;
+  events.onMiss();
 
-  // Hide mismatched cards after a short delay.
   flipBackTimer = window.setTimeout(
     hideMismatchedCards,
     FLIP_BACK_DELAY
@@ -133,71 +147,86 @@ function checkRevealedCards(cards: MemoryCard[]): void {
 }
 
 /**
- * Handles a click on a Memory card.
+ * Evaluates the two currently revealed cards.
  *
- * Ignores clicks while the board is locked
- * or when a card is already revealed.
+ * @param cards - All cards in the current game.
+ * @param events - The registered game events.
+ * @returns Nothing.
+ */
+function checkRevealedCards(
+  cards: MemoryCard[],
+  events: CardInteractionEvents
+): void {
+  const [FIRST_CARD, SECOND_CARD] = revealedCards;
+
+  if (isMatchingPair(FIRST_CARD, SECOND_CARD, cards)) {
+    handleMatch(events);
+    return;
+  }
+
+  handleMiss(events);
+}
+
+/**
+ * Handles a click on a Memory card.
  *
  * @param card - The clicked card element.
  * @param cards - All cards in the current game.
+ * @param events - The registered game events.
  * @returns Nothing.
  */
 function handleCardClick(
   card: HTMLButtonElement,
-  cards: MemoryCard[]
+  cards: MemoryCard[],
+  events: CardInteractionEvents
 ): void {
-  // Ignore invalid clicks.
   if (isBoardLocked || card.classList.contains('is-flipped')) {
     return;
   }
 
-  // Reveal the selected card.
   revealCard(card);
 
-  // Compare cards when two are revealed.
   if (revealedCards.length === 2) {
-    checkRevealedCards(cards);
+    checkRevealedCards(cards, events);
   }
 }
 
 /**
  * Registers click events for all Memory cards.
  *
- * Resets the previous interaction state
- * before initializing a new game.
- *
  * @param cards - All cards in the current game.
+ * @param events - The registered game events.
  * @returns Nothing.
  */
-export function setupCardInteractions(cards: MemoryCard[]): void {
-  // Reset timers and interaction state.
+export function setupCardInteractions(
+  cards: MemoryCard[],
+  events: CardInteractionEvents
+): void {
   resetCardInteractions();
 
-  // Find all Memory card buttons.
   const CARD_ELEMENTS: NodeListOf<HTMLButtonElement> =
     document.querySelectorAll<HTMLButtonElement>('.game__card');
 
-  // Register a click event for each card.
   CARD_ELEMENTS.forEach((card: HTMLButtonElement): void => {
-    card.addEventListener('click', (): void => handleCardClick(card, cards));
+    card.addEventListener(
+      'click',
+      (): void => handleCardClick(card, cards, events)
+    );
   });
 }
 
 /**
  * Resets the card interaction state.
  *
- * Cancels any pending flip-back timer,
- * clears revealed cards, and unlocks the board.
+ * Cancels pending timers and unlocks the board.
  *
  * @returns Nothing.
  */
 export function resetCardInteractions(): void {
-  // Cancel the active timer if one exists.
   if (flipBackTimer !== null) {
     window.clearTimeout(flipBackTimer);
   }
 
-  // Reset all interaction variables.
   flipBackTimer = null;
   revealedCards = [];
   isBoardLocked = false;

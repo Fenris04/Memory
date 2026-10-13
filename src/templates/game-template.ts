@@ -1,11 +1,14 @@
 import type { MemoryCard } from '../game/card-types';
-import type { BoardSize } from '../settings/game-settings';
+import type { GameState } from '../game/game-state';
+import type { GameSettings } from '../settings/game-settings';
+
+import { renderScoreboard } from './score-template';
 
 /**
  * Creates the HTML markup for a single Memory card.
  *
  * @param card - The card data.
- * @returns The HTML markup for one interactive card.
+ * @returns HTML markup for one interactive card.
  */
 function renderCard(card: MemoryCard): string {
   return `
@@ -32,18 +35,22 @@ function renderCard(card: MemoryCard): string {
  * Creates the HTML markup for the game board.
  *
  * @param cards - The cards to display.
- * @param boardSize - The selected board size.
+ * @param settings - The selected game settings.
+ * @param state - The current game state.
  * @returns The complete game screen markup.
  */
 export function renderGame(
   cards: MemoryCard[],
-  boardSize: BoardSize
+  settings: GameSettings,
+  state: GameState
 ): string {
   return `
     <section class="game">
       <h1 class="game__title">Memory Game</h1>
 
-      <div class="game__board" data-size="${boardSize}">
+      ${renderScoreboard(state, settings.playerColor)}
+
+      <div class="game__board" data-size="${settings.boardSize}">
         ${cards.map(renderCard).join('')}
       </div>
 
