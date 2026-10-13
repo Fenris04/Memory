@@ -20,6 +20,7 @@ import { getPairCount } from './game/board-utils';
 // Import TypeScript types.
 import type { GameSettings } from './settings/game-settings';
 import type { CardImages, MemoryCard } from './game/card-types';
+import { setupCardInteractions } from './game/card-interactions';
 
 // Find the main application container.
 const CONTENT: HTMLElement | null =
@@ -136,8 +137,8 @@ function createGameCards(): MemoryCard[] {
 /**
  * Displays the Memory Game screen.
  *
- * Creates the cards and renders the game board
- * using the selected board size and theme.
+ * Creates the cards, renders the game board,
+ * and registers the card and exit interactions.
  *
  * @returns Nothing.
  */
@@ -146,11 +147,14 @@ function showGame(): void {
     return;
   }
 
-  // Create the memory cards.
+  // Create the Memory cards.
   const CARDS: MemoryCard[] = createGameCards();
 
   // Display the game board.
   CONTENT.innerHTML = renderGame(CARDS, gameSettings.boardSize);
+
+  // Register the card click events.
+  setupCardInteractions(CARDS);
 
   // Register the Exit Game button.
   setupExitButton();

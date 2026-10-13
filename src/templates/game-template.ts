@@ -5,17 +5,26 @@ import type { BoardSize } from '../settings/game-settings';
  * Creates the HTML markup for a single Memory card.
  *
  * @param card - The card data.
- * @returns The HTML markup for one card.
+ * @returns The HTML markup for one interactive card.
  */
 function renderCard(card: MemoryCard): string {
   return `
-    <article class="game__card">
-      <img
-        src="${card.frontImage}"
-        alt="Memory card ${card.id + 1}"
-        class="game__card-image"
-      />
-    </article>
+    <button
+      class="game__card"
+      type="button"
+      data-card-id="${card.id}"
+      aria-label="Flip card ${card.id + 1}"
+      aria-pressed="false"
+    >
+      <span class="game__card-inner">
+        <span class="game__card-face game__card-back">
+          <img src="${card.backImage}" alt="" />
+        </span>
+        <span class="game__card-face game__card-front">
+          <img src="${card.frontImage}" alt="" />
+        </span>
+      </span>
+    </button>
   `;
 }
 
