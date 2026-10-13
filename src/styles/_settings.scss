@@ -1,0 +1,106 @@
+@use 'variables' as *;
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100vh;
+  padding: 24px;
+  text-align: center;
+
+  &__title {
+    color: $color-primary;
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  &__description {
+    color: $color-text-muted;
+    font-size: 1.2rem;
+  }
+
+  #back-button {
+    margin-top: 32px;
+    padding: 14px 28px;
+
+    border: none;
+    border-radius: $border-radius;
+
+    background-color: $color-primary;
+    color: $color-background;
+
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-primary-hover;
+    }
+  }
+
+  &__group {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+
+    margin-top: 24px;
+    padding: 24px;
+
+    border: 1px solid $color-text-muted;
+    border-radius: $border-radius;
+  }
+
+  // Allow option groups to wrap on smaller screens
+  &__group {
+    flex-wrap: wrap;
+    width: min(100%, 600px);
+  }
+
+  &__label {
+    padding: 0 8px;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    cursor: pointer;
+
+    input {
+      accent-color: $color-primary;
+      cursor: pointer;
+    }
+  }
+
+  // Layout for the navigation buttons
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+
+    margin-top: 32px;
+  }
+
+  // Style for the Play Now button
+  #play-button {
+    padding: 14px 28px;
+
+    border: none;
+    border-radius: $border-radius;
+
+    background-color: $color-primary;
+    color: $color-background;
+
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-primary-hover;
+    }
+  }
+}
