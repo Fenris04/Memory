@@ -20,7 +20,11 @@ import { getPairCount } from './game/board-utils';
 // Import TypeScript types.
 import type { GameSettings } from './settings/game-settings';
 import type { CardImages, MemoryCard } from './game/card-types';
-import { setupCardInteractions } from './game/card-interactions';
+import {
+  resetCardInteractions,
+  setupCardInteractions
+} from './game/card-interactions';
+
 
 // Find the main application container.
 const CONTENT: HTMLElement | null =
@@ -174,7 +178,7 @@ function setupExitButton(): void {
   const EXIT_BUTTON: HTMLElement | null =
     document.getElementById('exit-button');
 
-  EXIT_BUTTON?.addEventListener('click', showHome);
+  EXIT_BUTTON?.addEventListener('click', exitGame);
 }
 
 /**
@@ -185,6 +189,19 @@ function setupExitButton(): void {
  * @returns Nothing.
  */
 function init(): void {
+  showHome();
+}
+
+/**
+ * Exits the current game safely.
+ *
+ * Cancels pending card timers before returning
+ * to the home screen.
+ *
+ * @returns Nothing.
+ */
+function exitGame(): void {
+  resetCardInteractions();
   showHome();
 }
 
