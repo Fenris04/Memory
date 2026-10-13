@@ -11,7 +11,7 @@ function renderCard(card: MemoryCard): string {
   return `
     <article class="game__card">
       <img
-        src="${card.image}"
+        src="${card.frontImage}"
         alt="Memory card ${card.id + 1}"
         class="game__card-image"
       />

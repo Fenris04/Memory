@@ -19,7 +19,7 @@ import { getPairCount } from './game/board-utils';
 
 // Import TypeScript types.
 import type { GameSettings } from './settings/game-settings';
-import type { MemoryCard } from './game/card-types';
+import type { CardImages, MemoryCard } from './game/card-types';
 
 // Find the main application container.
 const CONTENT: HTMLElement | null =
@@ -117,19 +117,19 @@ function saveGameSettings(): void {
 /**
  * Creates the cards for the selected game settings.
  *
- * Loads the selected theme images and determines
- * how many matching pairs are required.
+ * Loads the front and back images for the selected theme
+ * and creates the required number of matching pairs.
  *
  * @returns An array containing the memory cards.
  */
 function createGameCards(): MemoryCard[] {
-  // Load the images for the selected theme.
-  const IMAGES: string[] = getThemeImages(gameSettings.theme);
+  // Load the card designs for the selected theme.
+  const IMAGES: CardImages[] = getThemeImages(gameSettings.theme);
 
   // Determine the number of matching pairs.
   const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
 
-  // Create two matching cards for each image.
+  // Create two matching cards for each design.
   return createCards(IMAGES, PAIR_COUNT);
 }
 
