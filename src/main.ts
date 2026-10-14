@@ -1,7 +1,10 @@
 import './styles/style.scss';
 
 import { renderHome } from './templates/home-template';
-import { renderSettings } from './templates/settings-template';
+import {
+  renderSettings,
+  initializeThemePreview,
+} from './templates/settings-template';
 import { renderGame } from './templates/game-template';
 import { renderScoreboard } from './templates/score-template';
 import { renderGameOver } from './templates/game-over-template';
@@ -103,11 +106,6 @@ function showHome(): void {
   START_BUTTON?.addEventListener('click', showSettings);
 }
 
-/**
- * Displays the settings screen and registers its events.
- *
- * @returns Nothing.
- */
 function showSettings(): void {
   if (!CONTENT) {
     return;
@@ -118,6 +116,7 @@ function showSettings(): void {
   setupBackButton();
   setupPlayButton();
   setupSettingsInteractions();
+  initializeThemePreview();
 }
 
 /**

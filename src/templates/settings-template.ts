@@ -1,3 +1,8 @@
+import codeVibesPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
+import daProjectsPreview from '../assets/Varianten/Theme-Visual/Property-1-DA-projects__2285-4173.svg';
+import foodPreview from '../assets/Varianten/Theme-Visual/Property-1-foods__2285-4059.svg';
+import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
+
 /**
  * Creates the player color selection.
  *
@@ -83,37 +88,6 @@ function renderThemeOptions(): string {
 }
 
 /**
- * Creates the HTML structure for the settings screen.
- *
- * Combines all available game settings
- * and displays the navigation buttons.
- *
- * @returns The complete settings screen markup.
- */
-export function renderSettings(): string {
-  return `
-    <section class="settings">
-      <h1 class="settings__title">Game Settings</h1>
-
-      <p class="settings__description">
-        Customize your game before you start!
-      </p>
-
-      ${renderGameModeSettings()}
-      ${renderBotDifficultySettings()}
-      ${renderColorOptions()}
-      ${renderBoardOptions()}
-      ${renderThemeOptions()}
-
-      <div class="settings__actions">
-        <button id="back-button" type="button">Back to Home</button>
-        <button id="play-button" type="button">Play Now</button>
-      </div>
-    </section>
-  `;
-}
-
-/**
  * Creates the game mode selection.
  *
  * @returns HTML markup for the game mode options.
@@ -121,7 +95,7 @@ export function renderSettings(): string {
 function renderGameModeSettings(): string {
   return `
     <fieldset class="settings__group">
-      <legend>Game Mode</legend>
+      <legend class="settings__label">Game Mode</legend>
 
       <label class="settings__option">
         <input
@@ -153,12 +127,12 @@ function renderGameModeSettings(): string {
 function renderBotDifficultySettings(): string {
   return `
     <fieldset
-    id="bot-difficulty-settings"
-    class="settings__group"
-    hidden
-    disabled
+      id="bot-difficulty-settings"
+      class="settings__group"
+      hidden
+      disabled
     >
-      <legend>Bot Difficulty</legend>
+      <legend class="settings__label">Bot Difficulty</legend>
 
       <label class="settings__option">
         <input type="radio" name="bot-difficulty" value="easy" checked />
@@ -176,4 +150,111 @@ function renderBotDifficultySettings(): string {
       </label>
     </fieldset>
   `;
+}
+
+/**
+ * Creates the HTML structure for the settings screen.
+ *
+ * Displays the game settings, theme preview,
+ * and navigation buttons.
+ *
+ * @returns The complete settings screen markup.
+ */
+export function renderSettings(): string {
+  return `
+    <section class="settings">
+      <div class="settings__container">
+        <header class="settings__header">
+          <h1 class="settings__title">Game Settings</h1>
+
+          <p class="settings__description">
+            Customize your game before you start!
+          </p>
+        </header>
+
+        <div class="settings__layout">
+          <div class="settings__controls">
+            ${renderThemeOptions()}
+            ${renderColorOptions()}
+            ${renderBoardOptions()}
+            ${renderGameModeSettings()}
+            ${renderBotDifficultySettings()}
+          </div>
+
+          <div class="settings__preview">
+            <img
+              id="theme-preview"
+              class="settings__preview-image"
+              src="${codeVibesPreview}"
+              alt="Code Vibes card theme preview"
+            />
+          </div>
+        </div>
+
+        <div class="settings__actions">
+          <button id="back-button" type="button">
+            Back to Home
+          </button>
+
+          <button id="play-button" type="button">
+            Play Now
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+/**
+ * Initializes the interactive card theme preview.
+ *
+ * Updates the preview image whenever the selected
+ * card theme changes.
+ */
+export function initializeThemePreview(): void {
+  const preview = document.querySelector<HTMLImageElement>('#theme-preview');
+
+  if (!preview) {
+    return;
+  }
+
+  const previews: Record<string, { src: string; alt: string }> = {
+    'code-vibes': {
+      src: codeVibesPreview,
+      alt: 'Code Vibes card theme preview',
+    },
+    'da-projects': {
+      src: daProjectsPreview,
+      alt: 'DA Projects card theme preview',
+    },
+    food: {
+      src: foodPreview,
+      alt: 'Food card theme preview',
+    },
+    gaming: {
+      src: gamingPreview,
+      alt: 'Gaming card theme preview',
+    },
+  };
+
+  const themeInputs = document.querySelectorAll<HTMLInputElement>(
+    'input[name="card-theme"]'
+  );
+
+  themeInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      if (!input.checked) {
+        return;
+      }
+
+      const selectedPreview = previews[input.value];
+
+      if (!selectedPreview) {
+        return;
+      }
+
+      preview.src = selectedPreview.src;
+      preview.alt = selectedPreview.alt;
+    });
+  });
 }
