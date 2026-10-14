@@ -45,7 +45,7 @@ export function renderGame(
   state: GameState
 ): string {
   return `
-    <section class="game">
+    <section class="game" data-theme="${settings.theme}">
       <button id="exit-button" type="button">
         Exit Game
       </button>

@@ -1,0 +1,19 @@
+.game {
+  --theme-primary: #38bdf8;
+  --theme-secondary: #2563eb;
+
+  &[data-theme='da-projects'] {
+    --theme-primary: #fb923c;
+    --theme-secondary: #facc15;
+  }
+
+  &[data-theme='food'] {
+    --theme-primary: #4ade80;
+    --theme-secondary: #a3e635;
+  }
+
+  &[data-theme='gaming'] {
+    --theme-primary: #c084fc;
+    --theme-secondary: #f472b6;
+  }
+}

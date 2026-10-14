@@ -109,8 +109,12 @@ function getCardPaths(
   theme: CardTheme,
   cardNumber: number
 ): string[] {
+  const FORMATTED_NUMBER: string = theme === 'food'
+    ? String(cardNumber).padStart(2, '0')
+    : String(cardNumber);
+
   const FOLDER_NAME: string =
-    `${THEME_FOLDERS[theme]}${cardNumber}/`;
+    `${THEME_FOLDERS[theme]}${FORMATTED_NUMBER}/`;
 
   return Object.keys(VARIANT_IMAGES).filter(
     (path: string): boolean => path.includes(FOLDER_NAME)

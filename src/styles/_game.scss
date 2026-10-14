@@ -9,9 +9,9 @@
   position: relative;
 
   &__title {
-    margin: 0 0 16px;
-    color: $color-primary;
-    font-size: clamp(1.4rem, 2vw, 2rem);
+  margin: 0 0 16px;
+  color: var(--theme-primary);
+  font-size: clamp(1.4rem, 2vw, 2rem);
   }
 
   &__board {
@@ -19,6 +19,10 @@
     gap: 10px;
     width: 100%;
     margin: 0 auto 20px;
+    padding: 8px;
+    border: 2px solid var(--theme-secondary);
+    border-radius: $border-radius;
+    
 
     &[data-size='4x4'] {
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -109,7 +113,7 @@
     padding: 12px 24px;
     border: none;
     border-radius: $border-radius;
-    background-color: $color-primary;
+    background-color: var(--theme-primary);
     color: $color-background;
     cursor: pointer;
   }
