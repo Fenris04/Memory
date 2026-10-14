@@ -46,6 +46,7 @@ import type { CardInteractionEvents } from './game/card-interactions';
 
 import {
   cancelBotTurn,
+  resumeBotTurn,
   scheduleBotTurn,
   setBotDifficulty
 } from './game/memory-bot';
@@ -186,12 +187,10 @@ function showCoinResult(startingPlayer: PlayerNumber): void {
   COIN_SCREEN?.setAttribute('data-winner', String(startingPlayer));
 
   if (MESSAGE) {
-    if (MESSAGE) {
     MESSAGE.innerHTML = renderCoinResult(
       startingPlayer,
       gameSettings.gameMode
-      );
-    }
+    );
   }
 
   coinTossTimer = null;
@@ -457,7 +456,7 @@ function setupExitButton(): void {
 
   EXIT_DIALOG.addEventListener('close', (): void => {
     if (!isLeavingGame && isBotTurn()) {
-      scheduleBotTurn();
+    scheduleBotTurn();
     }
   });
 

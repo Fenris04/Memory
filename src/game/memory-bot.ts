@@ -216,6 +216,33 @@ export function cancelBotTurn(): void {
 }
 
 /**
+ * Resumes the bot's turn after closing the exit dialog.
+ *
+ * @returns Nothing.
+ */
+export function resumeBotTurn(): void {
+  cancelBotTurn();
+
+  const FLIPPED_CARD: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>(
+      '.game__card.is-flipped:not(.is-matched)'
+    );
+
+  if (FLIPPED_CARD) {
+    const CARD_ID: number = Number(FLIPPED_CARD.dataset.cardId);
+
+    botTimer = window.setTimeout(
+      (): void => playSecondCard(CARD_ID),
+      BOT_SECOND_CARD_DELAY
+    );
+
+    return;
+  }
+
+  scheduleBotTurn();
+}
+
+/**
  * Occasionally removes one remembered card on medium difficulty.
  *
  * @returns Nothing.
