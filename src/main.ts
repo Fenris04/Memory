@@ -266,7 +266,8 @@ function updateScoreboard(): void {
 
   SCOREBOARD.outerHTML = renderScoreboard(
     gameState,
-    gameSettings.playerColor
+    gameSettings.playerColor,
+    gameSettings.gameMode
   );
 }
 
@@ -285,7 +286,8 @@ function showGameOver(): void {
 
   CONTENT.innerHTML = renderGameOver(
     gameState,
-    gameSettings.playerColor
+    gameSettings.playerColor,
+    gameSettings.gameMode
   );
 
   setupHomeButton();

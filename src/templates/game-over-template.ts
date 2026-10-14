@@ -1,4 +1,5 @@
 import { getWinner } from '../game/game-state';
+import { getPlayerName } from '../game/player-utils';
 
 import type {
   GameState,
@@ -6,6 +7,7 @@ import type {
 } from '../game/game-state';
 
 import type {
+  GameMode,
   PlayerColor
 } from '../settings/game-settings';
 
@@ -39,12 +41,16 @@ function getWinnerColor(
  * Creates the result heading.
  *
  * @param winner - The winning player or null.
+ * @param gameMode - The selected game mode.
  * @returns The result heading markup.
  */
-function renderResultHeading(winner: PlayerNumber | null): string {
+function renderResultHeading(
+  winner: PlayerNumber | null,
+  gameMode: GameMode
+): string {
   const MESSAGE: string = winner === null
     ? "IT'S A DRAW!"
-    : `PLAYER ${winner} WINS!`;
+    : `${getPlayerName(winner, gameMode).toUpperCase()} WINS!`;
 
   return `<h1 class="game-over__result">${MESSAGE}</h1>`;
 }
@@ -69,13 +75,20 @@ function renderResultIcon(winner: PlayerNumber | null): string {
  * Creates the final score display.
  *
  * @param state - The completed game state.
+ * @param gameMode - The selected game mode.
  * @returns The final score markup.
  */
-function renderFinalScores(state: GameState): string {
+function renderFinalScores(
+  state: GameState,
+  gameMode: GameMode
+): string {
+  const FIRST_NAME: string = getPlayerName(1, gameMode);
+  const SECOND_NAME: string = getPlayerName(2, gameMode);
+
   return `
     <div class="game-over__scores">
-      <p>Player 1: <strong>${state.playerOneScore}</strong></p>
-      <p>Player 2: <strong>${state.playerTwoScore}</strong></p>
+      <p>${FIRST_NAME}: <strong>${state.playerOneScore}</strong></p>
+      <p>${SECOND_NAME}: <strong>${state.playerTwoScore}</strong></p>
     </div>
   `;
 }
@@ -104,11 +117,13 @@ function renderResultActions(): string {
  *
  * @param state - The completed game state.
  * @param playerColor - The selected color of Player 1.
+ * @param gameMode - The selected game mode.
  * @returns HTML markup for the result screen.
  */
 export function renderGameOver(
   state: GameState,
-  playerColor: PlayerColor
+  playerColor: PlayerColor,
+  gameMode: GameMode
 ): string {
   const WINNER: PlayerNumber | null = getWinner(state);
 
@@ -118,12 +133,12 @@ export function renderGameOver(
 
   return `
     <section class="game-over" data-result="${RESULT_COLOR}">
-      ${renderResultHeading(WINNER)}
+      ${renderResultHeading(WINNER, gameMode)}
       ${renderResultIcon(WINNER)}
 
       <h2 class="game-over__subtitle">Final Score</h2>
 
-      ${renderFinalScores(state)}
+      ${renderFinalScores(state, gameMode)}
       ${renderResultActions()}
     </section>
   `;

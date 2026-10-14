@@ -48,7 +48,7 @@ export function renderGame(
     <section class="game">
       <h1 class="game__title">Memory Game</h1>
 
-      ${renderScoreboard(state, settings.playerColor)}
+      ${renderScoreboard(state, settings.playerColor, settings.gameMode)}
 
       <div class="game__board" data-size="${settings.boardSize}">
         ${cards.map(renderCard).join('')}
