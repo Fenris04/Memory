@@ -1,51 +1,43 @@
-// Import the main SCSS stylesheet.
 import './styles/style.scss';
 
-// Import screen templates.
 import { renderHome } from './templates/home-template';
 import { renderSettings } from './templates/settings-template';
 import { renderGame } from './templates/game-template';
 import { renderScoreboard } from './templates/score-template';
+import { renderGameOver } from './templates/game-over-template';
 
-// Import settings utilities.
 import {
   createDefaultSettings,
   getGameSettings
 } from './settings/settings-utils';
 
-// Import game utilities.
 import { getThemeImages } from './game/card-assets';
 import { createCards, shuffleCards } from './game/card-utils';
 import { getPairCount } from './game/board-utils';
 
-// Import card interaction functions.
 import {
   resetCardInteractions,
   setupCardInteractions
 } from './game/card-interactions';
 
-// Import game state functions.
 import {
   awardPoint,
   createGameState,
+  getNextStartingPlayer,
+  isGameFinished,
   switchPlayer,
   tossCoin
 } from './game/game-state';
 
-// Import TypeScript types.
 import type { GameSettings } from './settings/game-settings';
 import type { CardImages, MemoryCard } from './game/card-types';
 import type { GameState } from './game/game-state';
 import type { CardInteractionEvents } from './game/card-interactions';
 
-// Find the main application container.
 const CONTENT: HTMLElement | null =
   document.getElementById('main-container');
 
-// Store the selected game settings.
 let gameSettings: GameSettings = createDefaultSettings();
-
-// Store the current game state.
 let gameState: GameState | null = null;
 
 /**
@@ -120,9 +112,7 @@ function createGameCards(): MemoryCard[] {
 }
 
 /**
- * Starts a new game with the selected settings.
- *
- * Uses a coin toss to choose the starting player.
+ * Starts a new game with a randomly selected player.
  *
  * @returns Nothing.
  */
@@ -160,9 +150,40 @@ function updateScoreboard(): void {
 }
 
 /**
- * Awards a point for a matching pair.
+ * Displays the result screen after the final pair.
  *
- * The current player keeps their turn.
+ * @returns Nothing.
+ */
+function showGameOver(): void {
+  if (!CONTENT || !gameState) {
+    return;
+  }
+
+  resetCardInteractions();
+
+  CONTENT.innerHTML = renderGameOver(
+    gameState,
+    gameSettings.playerColor
+  );
+
+  setupHomeButton();
+  setupRematchButton();
+}
+
+/**
+ * Registers the Back to Home button on the result screen.
+ *
+ * @returns Nothing.
+ */
+function setupHomeButton(): void {
+  const HOME_BUTTON: HTMLElement | null =
+    document.getElementById('home-button');
+
+  HOME_BUTTON?.addEventListener('click', exitGame);
+}
+
+/**
+ * Awards a point and checks whether the game is finished.
  *
  * @returns Nothing.
  */
@@ -173,6 +194,10 @@ function handleGameMatch(): void {
 
   awardPoint(gameState);
   updateScoreboard();
+
+  if (isGameFinished(gameState)) {
+    showGameOver();
+  }
 }
 
 /**
@@ -254,5 +279,36 @@ function init(): void {
   showHome();
 }
 
-// Start the application.
+/**
+ * Starts a rematch with the previous loser's first turn.
+ *
+ * Keeps the selected settings and resets the scores.
+ *
+ * @returns Nothing.
+ */
+function startRematch(): void {
+  if (!gameState) {
+    return;
+  }
+
+  const STARTING_PLAYER = getNextStartingPlayer(gameState);
+  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+
+  gameState = createGameState(PAIR_COUNT, STARTING_PLAYER);
+
+  showGame();
+}
+
+/**
+ * Registers the Rematch button.
+ *
+ * @returns Nothing.
+ */
+function setupRematchButton(): void {
+  const REMATCH_BUTTON: HTMLElement | null =
+    document.getElementById('rematch-button');
+
+  REMATCH_BUTTON?.addEventListener('click', startRematch);
+}
+
 init();

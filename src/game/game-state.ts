@@ -100,3 +100,21 @@ export function switchPlayer(state: GameState): void {
 export function isGameFinished(state: GameState): boolean {
   return state.matchedPairs === state.totalPairs;
 }
+
+/**
+ * Determines the winner of a completed Memory game.
+ *
+ * Returns null when both players have the same score.
+ *
+ * @param state - The completed game state.
+ * @returns The winning player or null for a draw.
+ */
+export function getWinner(
+  state: GameState
+): PlayerNumber | null {
+  if (state.playerOneScore === state.playerTwoScore) {
+    return null;
+  }
+
+  return state.playerOneScore > state.playerTwoScore ? 1 : 2;
+}
