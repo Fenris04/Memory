@@ -8,6 +8,7 @@ const FLIP_BACK_DELAY: number = 1000;
 export interface CardInteractionEvents {
   onMatch: () => void;
   onMiss: () => void;
+  onReveal?: (cardId: number, pairId: number) => void;
   canSelectCard?: () => boolean;
 }
 
@@ -187,6 +188,7 @@ function selectCard(card: HTMLButtonElement): void {
   }
 
   revealCard(card);
+  reportRevealedCard(card);
 
   if (revealedCards.length === 2) {
     checkRevealedCards(activeCards, activeEvents);
@@ -267,4 +269,23 @@ export function resetCardInteractions(): void {
   isBoardLocked = false;
   activeCards = [];
   activeEvents = null;
+}
+
+/**
+ * Reports a newly revealed card to the game controller.
+ *
+ * @param element - The revealed card element.
+ * @returns Nothing.
+ */
+function reportRevealedCard(element: HTMLButtonElement): void {
+  const CARD: MemoryCard | undefined = findCard(
+    element,
+    activeCards
+  );
+
+  if (!CARD) {
+    return;
+  }
+
+  activeEvents?.onReveal?.(CARD.id, CARD.pairId);
 }

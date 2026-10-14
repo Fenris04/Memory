@@ -1,4 +1,6 @@
+import { getPlayerName } from '../game/player-utils';
 import type { PlayerNumber } from '../game/game-state';
+import type { GameMode } from '../settings/game-settings';
 
 /**
  * Creates the animated coin toss screen.
@@ -30,11 +32,17 @@ export function renderCoinToss(): string {
 }
 
 /**
- * Creates the message announcing the starting player.
+ * Renders the starting player's coin toss result.
  *
  * @param player - The player selected by the coin toss.
- * @returns HTML markup for the result message.
+ * @param gameMode - The selected game mode.
+ * @returns The result message as HTML.
  */
-export function renderCoinResult(player: PlayerNumber): string {
-  return `Player ${player} starts!`;
+export function renderCoinResult(
+  player: PlayerNumber,
+  gameMode: GameMode
+): string {
+  const PLAYER_NAME: string = getPlayerName(player, gameMode);
+
+  return `${PLAYER_NAME} starts!`;
 }

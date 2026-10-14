@@ -46,8 +46,14 @@ import type { CardInteractionEvents } from './game/card-interactions';
 
 import {
   cancelBotTurn,
-  scheduleBotTurn
-} from './game/easy-bot';
+  scheduleBotTurn,
+  setBotDifficulty
+} from './game/memory-bot';
+
+import {
+  rememberCard,
+  resetBotMemory
+} from './game/bot-memory';
 
 const CONTENT: HTMLElement | null =
   document.getElementById('main-container');
@@ -151,7 +157,7 @@ function createGameCards(): MemoryCard[] {
 }
 
 /**
- * Creates a new game state with the selected starting player.
+ * Creates a new round and clears the bot's memory.
  *
  * @param startingPlayer - The player who begins the game.
  * @returns Nothing.
@@ -159,6 +165,7 @@ function createGameCards(): MemoryCard[] {
 function createNewRound(startingPlayer: PlayerNumber): void {
   const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
 
+  resetBotMemory();
   gameState = createGameState(PAIR_COUNT, startingPlayer);
 }
 
@@ -179,7 +186,12 @@ function showCoinResult(startingPlayer: PlayerNumber): void {
   COIN_SCREEN?.setAttribute('data-winner', String(startingPlayer));
 
   if (MESSAGE) {
-    MESSAGE.innerHTML = renderCoinResult(startingPlayer);
+    if (MESSAGE) {
+    MESSAGE.innerHTML = renderCoinResult(
+      startingPlayer,
+      gameSettings.gameMode
+      );
+    }
   }
 
   coinTossTimer = null;
@@ -211,12 +223,13 @@ function showCoinToss(startingPlayer: PlayerNumber): void {
 }
 
 /**
- * Starts a new game with a visible coin toss.
+ * Starts a new game with the selected bot difficulty.
  *
  * @returns Nothing.
  */
 function startGame(): void {
   gameSettings = getGameSettings();
+  setBotDifficulty(gameSettings.botDifficulty);
 
   const STARTING_PLAYER: PlayerNumber = tossCoin();
 
@@ -372,6 +385,7 @@ function setupGameEvents(cards: MemoryCard[]): void {
   const EVENTS: CardInteractionEvents = {
     onMatch: handleGameMatch,
     onMiss: handleGameMiss,
+    onReveal: rememberCard,
     canSelectCard: (): boolean => !isBotTurn()
   };
 
