@@ -1,24 +1,21 @@
 import type { MemoryCard } from './card-types';
 
-// Define how long mismatched cards remain visible.
 const FLIP_BACK_DELAY: number = 1000;
 
 /**
- * Defines the events reported by the card interactions.
+ * Defines the events reported by card interactions.
  */
 export interface CardInteractionEvents {
   onMatch: () => void;
   onMiss: () => void;
+  canSelectCard?: () => boolean;
 }
 
-// Store the currently revealed cards.
 let revealedCards: HTMLButtonElement[] = [];
-
-// Prevent clicks while mismatched cards are visible.
 let isBoardLocked: boolean = false;
-
-// Store the active timer so it can be cancelled.
 let flipBackTimer: number | null = null;
+let activeCards: MemoryCard[] = [];
+let activeEvents: CardInteractionEvents | null = null;
 
 /**
  * Reveals a Memory card.
@@ -44,7 +41,7 @@ function hideCard(card: HTMLButtonElement): void {
 }
 
 /**
- * Finds a Memory card by its HTML element.
+ * Finds the data belonging to a card element.
  *
  * @param element - The selected card button.
  * @param cards - All cards in the current game.
@@ -62,12 +59,12 @@ function findCard(
 }
 
 /**
- * Checks whether two cards belong to the same pair.
+ * Checks whether two cards form a matching pair.
  *
  * @param first - The first revealed card.
  * @param second - The second revealed card.
  * @param cards - All cards in the current game.
- * @returns True if both cards belong to the same pair.
+ * @returns True when both cards belong to the same pair.
  */
 function isMatchingPair(
   first: HTMLButtonElement,
@@ -100,25 +97,23 @@ function markMatchedCards(
 
   first.disabled = true;
   second.disabled = true;
-
   revealedCards = [];
 }
 
 /**
- * Hides two cards that do not match.
+ * Hides cards that do not form a matching pair.
  *
  * @returns Nothing.
  */
 function hideMismatchedCards(): void {
   revealedCards.forEach(hideCard);
-
   revealedCards = [];
   isBoardLocked = false;
   flipBackTimer = null;
 }
 
 /**
- * Handles two matching cards.
+ * Handles a successful card match.
  *
  * @param events - The registered game events.
  * @returns Nothing.
@@ -131,7 +126,7 @@ function handleMatch(events: CardInteractionEvents): void {
 }
 
 /**
- * Handles two cards that do not match.
+ * Handles a missed card pair.
  *
  * @param events - The registered game events.
  * @returns Nothing.
@@ -147,7 +142,7 @@ function handleMiss(events: CardInteractionEvents): void {
 }
 
 /**
- * Evaluates the two currently revealed cards.
+ * Evaluates the currently revealed pair.
  *
  * @param cards - All cards in the current game.
  * @param events - The registered game events.
@@ -168,27 +163,70 @@ function checkRevealedCards(
 }
 
 /**
- * Handles a click on a Memory card.
+ * Checks whether a card can be selected.
  *
- * @param card - The clicked card element.
- * @param cards - All cards in the current game.
- * @param events - The registered game events.
+ * @param card - The selected card element.
+ * @returns True when the card is available.
+ */
+function isCardAvailable(card: HTMLButtonElement): boolean {
+  return !isBoardLocked &&
+    !card.disabled &&
+    !card.classList.contains('is-flipped') &&
+    revealedCards.length < 2;
+}
+
+/**
+ * Reveals a selected card and evaluates completed pairs.
+ *
+ * @param card - The selected card element.
  * @returns Nothing.
  */
-function handleCardClick(
-  card: HTMLButtonElement,
-  cards: MemoryCard[],
-  events: CardInteractionEvents
-): void {
-  if (isBoardLocked || card.classList.contains('is-flipped')) {
+function selectCard(card: HTMLButtonElement): void {
+  if (!activeEvents || !isCardAvailable(card)) {
     return;
   }
 
   revealCard(card);
 
   if (revealedCards.length === 2) {
-    checkRevealedCards(cards, events);
+    checkRevealedCards(activeCards, activeEvents);
   }
+}
+
+/**
+ * Handles a card selection made by a human player.
+ *
+ * @param card - The clicked card element.
+ * @returns Nothing.
+ */
+function handleHumanClick(card: HTMLButtonElement): void {
+  if (activeEvents?.canSelectCard?.() === false) {
+    return;
+  }
+
+  selectCard(card);
+}
+
+/**
+ * Returns cards that are still available for selection.
+ *
+ * @returns All currently selectable card elements.
+ */
+export function getAvailableCards(): HTMLButtonElement[] {
+  const CARDS: NodeListOf<HTMLButtonElement> =
+    document.querySelectorAll<HTMLButtonElement>('.game__card');
+
+  return Array.from(CARDS).filter(isCardAvailable);
+}
+
+/**
+ * Selects a card on behalf of the bot.
+ *
+ * @param card - The card selected by the bot.
+ * @returns Nothing.
+ */
+export function selectBotCard(card: HTMLButtonElement): void {
+  selectCard(card);
 }
 
 /**
@@ -203,22 +241,19 @@ export function setupCardInteractions(
   events: CardInteractionEvents
 ): void {
   resetCardInteractions();
+  activeCards = cards;
+  activeEvents = events;
 
   const CARD_ELEMENTS: NodeListOf<HTMLButtonElement> =
     document.querySelectorAll<HTMLButtonElement>('.game__card');
 
   CARD_ELEMENTS.forEach((card: HTMLButtonElement): void => {
-    card.addEventListener(
-      'click',
-      (): void => handleCardClick(card, cards, events)
-    );
+    card.addEventListener('click', (): void => handleHumanClick(card));
   });
 }
 
 /**
- * Resets the card interaction state.
- *
- * Cancels pending timers and unlocks the board.
+ * Resets card interactions and cancels pending timers.
  *
  * @returns Nothing.
  */
@@ -230,4 +265,6 @@ export function resetCardInteractions(): void {
   flipBackTimer = null;
   revealedCards = [];
   isBoardLocked = false;
+  activeCards = [];
+  activeEvents = null;
 }

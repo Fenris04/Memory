@@ -42,6 +42,11 @@ import type {
 } from './game/game-state';
 import type { CardInteractionEvents } from './game/card-interactions';
 
+import {
+  cancelBotTurn,
+  scheduleBotTurn
+} from './game/easy-bot';
+
 const CONTENT: HTMLElement | null =
   document.getElementById('main-container');
 
@@ -231,6 +236,7 @@ function startRematch(): void {
   const IS_DRAW: boolean = getWinner(gameState) === null;
   const STARTING_PLAYER: PlayerNumber = getNextStartingPlayer(gameState);
 
+  cancelBotTurn();
   createNewRound(STARTING_PLAYER);
 
   if (IS_DRAW) {
@@ -274,6 +280,7 @@ function showGameOver(): void {
     return;
   }
 
+  cancelBotTurn();
   resetCardInteractions();
 
   CONTENT.innerHTML = renderGameOver(
@@ -310,7 +317,7 @@ function setupRematchButton(): void {
 }
 
 /**
- * Awards a point and checks whether the game is finished.
+ * Awards a point and schedules another bot turn if needed.
  *
  * @returns Nothing.
  */
@@ -324,11 +331,16 @@ function handleGameMatch(): void {
 
   if (isGameFinished(gameState)) {
     showGameOver();
+    return;
+  }
+
+  if (isBotTurn()) {
+    scheduleBotTurn(true);
   }
 }
 
 /**
- * Switches players after a missed pair.
+ * Switches players and starts the bot when needed.
  *
  * @returns Nothing.
  */
@@ -339,10 +351,14 @@ function handleGameMiss(): void {
 
   switchPlayer(gameState);
   updateScoreboard();
+
+  if (isBotTurn()) {
+    scheduleBotTurn();
+  }
 }
 
 /**
- * Registers the game events.
+ * Registers the game events and controls human card selection.
  *
  * @param cards - All cards in the current game.
  * @returns Nothing.
@@ -350,14 +366,15 @@ function handleGameMiss(): void {
 function setupGameEvents(cards: MemoryCard[]): void {
   const EVENTS: CardInteractionEvents = {
     onMatch: handleGameMatch,
-    onMiss: handleGameMiss
+    onMiss: handleGameMiss,
+    canSelectCard: (): boolean => !isBotTurn()
   };
 
   setupCardInteractions(cards, EVENTS);
 }
 
 /**
- * Displays the Memory Game screen.
+ * Displays the game board and starts the bot when needed.
  *
  * @returns Nothing.
  */
@@ -372,14 +389,19 @@ function showGame(): void {
 
   setupGameEvents(CARDS);
   setupExitButton();
+
+  if (isBotTurn()) {
+    scheduleBotTurn();
+  }
 }
 
 /**
- * Exits the current game safely.
+ * Exits the current game and cancels pending actions.
  *
  * @returns Nothing.
  */
 function exitGame(): void {
+  cancelBotTurn();
   resetCoinToss();
   resetCardInteractions();
 
@@ -406,6 +428,16 @@ function setupExitButton(): void {
  */
 function init(): void {
   showHome();
+}
+
+/**
+ * Checks whether the bot is the current player.
+ *
+ * @returns True when the bot should play.
+ */
+function isBotTurn(): boolean {
+  return gameSettings.gameMode === 'player-vs-bot' &&
+    gameState?.currentPlayer === 2;
 }
 
 init();
