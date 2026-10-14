@@ -99,6 +99,7 @@ export function renderSettings(): string {
         Customize your game before you start!
       </p>
 
+      ${renderGameModeSettings()}
       ${renderColorOptions()}
       ${renderBoardOptions()}
       ${renderThemeOptions()}
@@ -108,5 +109,37 @@ export function renderSettings(): string {
         <button id="play-button" type="button">Play Now</button>
       </div>
     </section>
+  `;
+}
+
+/**
+ * Creates the game mode selection.
+ *
+ * @returns HTML markup for the game mode options.
+ */
+function renderGameModeSettings(): string {
+  return `
+    <fieldset class="settings__group">
+      <legend>Game Mode</legend>
+
+      <label class="settings__option">
+        <input
+          type="radio"
+          name="game-mode"
+          value="player-vs-player"
+          checked
+        />
+        <span>Player vs Player</span>
+      </label>
+
+      <label class="settings__option">
+        <input
+          type="radio"
+          name="game-mode"
+          value="player-vs-bot"
+        />
+        <span>Player vs Bot</span>
+      </label>
+    </fieldset>
   `;
 }

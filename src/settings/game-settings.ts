@@ -18,19 +18,26 @@ export type CardTheme =
   | 'gaming';
 
 /**
- * Describes the settings required to start a game.
+ * Defines the available game modes.
+ */
+export type GameMode = 'player-vs-player' | 'player-vs-bot';
+
+/**
+ * Stores the selected settings for a Memory game.
  */
 export interface GameSettings {
   playerColor: PlayerColor;
   boardSize: BoardSize;
   theme: CardTheme;
+  gameMode: GameMode;
 }
 
 /**
- * Stores the default settings for a new game.
+ * Defines the initial game settings.
  */
 export const DEFAULT_SETTINGS: GameSettings = {
   playerColor: 'blue',
   boardSize: '4x4',
-  theme: 'code-vibes'
+  theme: 'code-vibes',
+  gameMode: 'player-vs-player'
 };

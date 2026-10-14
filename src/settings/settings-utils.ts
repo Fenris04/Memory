@@ -1,8 +1,9 @@
 import type {
+  PlayerColor,
   BoardSize,
   CardTheme,
-  GameSettings,
-  PlayerColor
+  GameMode,
+  GameSettings
 } from './game-settings';
 
 import { DEFAULT_SETTINGS } from './game-settings';
@@ -62,15 +63,16 @@ export function getSelectedTheme(): CardTheme {
 }
 
 /**
- * Collects all selected game settings.
+ * Collects the selected game settings.
  *
- * @returns An object containing the selected settings.
+ * @returns The selected game settings.
  */
 export function getGameSettings(): GameSettings {
   return {
     playerColor: getSelectedPlayerColor(),
     boardSize: getSelectedBoardSize(),
-    theme: getSelectedTheme()
+    theme: getSelectedTheme(),
+    gameMode: getSelectedGameMode()
   };
 }
 
@@ -81,4 +83,20 @@ export function getGameSettings(): GameSettings {
  */
 export function createDefaultSettings(): GameSettings {
   return { ...DEFAULT_SETTINGS };
+}
+
+/**
+ * Returns the selected game mode.
+ *
+ * Uses local multiplayer as the fallback.
+ *
+ * @returns The selected game mode.
+ */
+export function getSelectedGameMode(): GameMode {
+  const SELECTED_MODE: string | null =
+    getSelectedValue('game-mode');
+
+  return SELECTED_MODE === 'player-vs-bot'
+    ? 'player-vs-bot'
+    : 'player-vs-player';
 }
