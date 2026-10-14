@@ -1,0 +1,147 @@
+.coin-toss {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+
+  min-height: 75vh;
+  padding: 32px 20px;
+
+  text-align: center;
+
+  &__title {
+    margin: 0;
+
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+
+    color: #ffffff;
+  }
+
+  &__coin {
+    width: 160px;
+    height: 160px;
+
+    perspective: 1000px;
+  }
+
+  &__coin-inner {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    transform-style: preserve-3d;
+
+    animation: coin-flip 0.55s linear infinite;
+  }
+
+  &__coin-face {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 8px solid #facc15;
+    border-radius: 50%;
+
+    background: linear-gradient(
+      135deg,
+      #fde68a,
+      #f59e0b
+    );
+
+    color: #78350f;
+
+    font-size: 72px;
+    font-weight: 900;
+
+    backface-visibility: hidden;
+
+    box-shadow:
+      inset 0 0 18px rgba(255, 255, 255, 0.5),
+      0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  &__coin-back {
+    transform: rotateY(180deg);
+  }
+
+  &__message {
+    margin: 0;
+
+    min-height: 32px;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    color: #fb923c;
+  }
+
+  &.is-finished {
+    .coin-toss__coin-inner {
+      animation: none;
+    }
+
+    .coin-toss__coin {
+      animation: coin-land 0.4s ease-out;
+    }
+  }
+
+  &[data-winner='2'].is-finished {
+    .coin-toss__coin-inner {
+      transform: rotateY(180deg);
+    }
+  }
+}
+
+@keyframes coin-flip {
+  from {
+    transform: rotateY(0deg);
+  }
+
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes coin-land {
+  from {
+    transform: translateY(-25px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .coin-toss {
+    gap: 28px;
+
+    &__coin {
+      width: 130px;
+      height: 130px;
+    }
+
+    &__coin-face {
+      font-size: 56px;
+    }
+
+    &__message {
+      font-size: 20px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin-toss {
+    &__coin-inner,
+    &.is-finished .coin-toss__coin {
+      animation: none;
+    }
+  }
+}

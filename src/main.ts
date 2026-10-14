@@ -5,6 +5,10 @@ import { renderSettings } from './templates/settings-template';
 import { renderGame } from './templates/game-template';
 import { renderScoreboard } from './templates/score-template';
 import { renderGameOver } from './templates/game-over-template';
+import {
+  renderCoinToss,
+  renderCoinResult
+} from './templates/coin-toss-template';
 
 import {
   createDefaultSettings,
@@ -24,6 +28,7 @@ import {
   awardPoint,
   createGameState,
   getNextStartingPlayer,
+  getWinner,
   isGameFinished,
   switchPlayer,
   tossCoin
@@ -31,14 +36,40 @@ import {
 
 import type { GameSettings } from './settings/game-settings';
 import type { CardImages, MemoryCard } from './game/card-types';
-import type { GameState } from './game/game-state';
+import type {
+  GameState,
+  PlayerNumber
+} from './game/game-state';
 import type { CardInteractionEvents } from './game/card-interactions';
 
 const CONTENT: HTMLElement | null =
   document.getElementById('main-container');
 
+const COIN_TOSS_DURATION: number = 1800;
+const COIN_RESULT_DURATION: number = 1200;
+
 let gameSettings: GameSettings = createDefaultSettings();
 let gameState: GameState | null = null;
+let coinTossTimer: number | null = null;
+let coinResultTimer: number | null = null;
+
+/**
+ * Cancels all pending coin toss timers.
+ *
+ * @returns Nothing.
+ */
+function resetCoinToss(): void {
+  if (coinTossTimer !== null) {
+    window.clearTimeout(coinTossTimer);
+  }
+
+  if (coinResultTimer !== null) {
+    window.clearTimeout(coinResultTimer);
+  }
+
+  coinTossTimer = null;
+  coinResultTimer = null;
+}
 
 /**
  * Displays the home screen.
@@ -112,16 +143,100 @@ function createGameCards(): MemoryCard[] {
 }
 
 /**
- * Starts a new game with a randomly selected player.
+ * Creates a new game state with the selected starting player.
+ *
+ * @param startingPlayer - The player who begins the game.
+ * @returns Nothing.
+ */
+function createNewRound(startingPlayer: PlayerNumber): void {
+  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+
+  gameState = createGameState(PAIR_COUNT, startingPlayer);
+}
+
+/**
+ * Displays the result of the coin toss.
+ *
+ * @param startingPlayer - The player selected by the coin toss.
+ * @returns Nothing.
+ */
+function showCoinResult(startingPlayer: PlayerNumber): void {
+  const COIN_SCREEN: HTMLElement | null =
+    document.querySelector('.coin-toss');
+
+  const MESSAGE: HTMLElement | null =
+    document.querySelector('.coin-toss__message');
+
+  COIN_SCREEN?.classList.add('is-finished');
+  COIN_SCREEN?.setAttribute('data-winner', String(startingPlayer));
+
+  if (MESSAGE) {
+    MESSAGE.innerHTML = renderCoinResult(startingPlayer);
+  }
+
+  coinTossTimer = null;
+}
+
+/**
+ * Starts the coin toss animation.
+ *
+ * @param startingPlayer - The player selected by the coin toss.
+ * @returns Nothing.
+ */
+function showCoinToss(startingPlayer: PlayerNumber): void {
+  if (!CONTENT) {
+    return;
+  }
+
+  resetCoinToss();
+  CONTENT.innerHTML = renderCoinToss();
+
+  coinTossTimer = window.setTimeout(
+    (): void => showCoinResult(startingPlayer),
+    COIN_TOSS_DURATION
+  );
+
+  coinResultTimer = window.setTimeout(
+    showGame,
+    COIN_TOSS_DURATION + COIN_RESULT_DURATION
+  );
+}
+
+/**
+ * Starts a new game with a visible coin toss.
  *
  * @returns Nothing.
  */
 function startGame(): void {
   gameSettings = getGameSettings();
 
-  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
+  const STARTING_PLAYER: PlayerNumber = tossCoin();
 
-  gameState = createGameState(PAIR_COUNT, tossCoin());
+  createNewRound(STARTING_PLAYER);
+  showCoinToss(STARTING_PLAYER);
+}
+
+/**
+ * Starts a rematch with the previous loser's first turn.
+ *
+ * A draw triggers another coin toss.
+ *
+ * @returns Nothing.
+ */
+function startRematch(): void {
+  if (!gameState) {
+    return;
+  }
+
+  const IS_DRAW: boolean = getWinner(gameState) === null;
+  const STARTING_PLAYER: PlayerNumber = getNextStartingPlayer(gameState);
+
+  createNewRound(STARTING_PLAYER);
+
+  if (IS_DRAW) {
+    showCoinToss(STARTING_PLAYER);
+    return;
+  }
 
   showGame();
 }
@@ -171,7 +286,7 @@ function showGameOver(): void {
 }
 
 /**
- * Registers the Back to Home button on the result screen.
+ * Registers the Back to Home button.
  *
  * @returns Nothing.
  */
@@ -180,6 +295,18 @@ function setupHomeButton(): void {
     document.getElementById('home-button');
 
   HOME_BUTTON?.addEventListener('click', exitGame);
+}
+
+/**
+ * Registers the Rematch button.
+ *
+ * @returns Nothing.
+ */
+function setupRematchButton(): void {
+  const REMATCH_BUTTON: HTMLElement | null =
+    document.getElementById('rematch-button');
+
+  REMATCH_BUTTON?.addEventListener('click', startRematch);
 }
 
 /**
@@ -253,7 +380,9 @@ function showGame(): void {
  * @returns Nothing.
  */
 function exitGame(): void {
+  resetCoinToss();
   resetCardInteractions();
+
   gameState = null;
   showHome();
 }
@@ -277,38 +406,6 @@ function setupExitButton(): void {
  */
 function init(): void {
   showHome();
-}
-
-/**
- * Starts a rematch with the previous loser's first turn.
- *
- * Keeps the selected settings and resets the scores.
- *
- * @returns Nothing.
- */
-function startRematch(): void {
-  if (!gameState) {
-    return;
-  }
-
-  const STARTING_PLAYER = getNextStartingPlayer(gameState);
-  const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
-
-  gameState = createGameState(PAIR_COUNT, STARTING_PLAYER);
-
-  showGame();
-}
-
-/**
- * Registers the Rematch button.
- *
- * @returns Nothing.
- */
-function setupRematchButton(): void {
-  const REMATCH_BUTTON: HTMLElement | null =
-    document.getElementById('rematch-button');
-
-  REMATCH_BUTTON?.addEventListener('click', startRematch);
 }
 
 init();
