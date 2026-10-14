@@ -3,6 +3,7 @@ import type {
   BoardSize,
   CardTheme,
   GameMode,
+  BotDifficulty,
   GameSettings
 } from './game-settings';
 
@@ -72,7 +73,8 @@ export function getGameSettings(): GameSettings {
     playerColor: getSelectedPlayerColor(),
     boardSize: getSelectedBoardSize(),
     theme: getSelectedTheme(),
-    gameMode: getSelectedGameMode()
+    gameMode: getSelectedGameMode(),
+    botDifficulty: getSelectedBotDifficulty()
   };
 }
 
@@ -99,4 +101,22 @@ export function getSelectedGameMode(): GameMode {
   return SELECTED_MODE === 'player-vs-bot'
     ? 'player-vs-bot'
     : 'player-vs-player';
+}
+
+/**
+ * Returns the selected bot difficulty.
+ *
+ * Uses easy difficulty as the fallback.
+ *
+ * @returns The selected bot difficulty.
+ */
+export function getSelectedBotDifficulty(): BotDifficulty {
+  const SELECTED: string | null =
+    getSelectedValue('bot-difficulty');
+
+  if (SELECTED === 'medium' || SELECTED === 'hard') {
+    return SELECTED;
+  }
+
+  return 'easy';
 }

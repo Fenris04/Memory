@@ -23,6 +23,11 @@ export type CardTheme =
 export type GameMode = 'player-vs-player' | 'player-vs-bot';
 
 /**
+ * Defines the available bot difficulty levels.
+ */
+export type BotDifficulty = 'easy' | 'medium' | 'hard';
+
+/**
  * Stores the selected settings for a Memory game.
  */
 export interface GameSettings {
@@ -30,6 +35,7 @@ export interface GameSettings {
   boardSize: BoardSize;
   theme: CardTheme;
   gameMode: GameMode;
+  botDifficulty: BotDifficulty;
 }
 
 /**
@@ -39,5 +45,6 @@ export const DEFAULT_SETTINGS: GameSettings = {
   playerColor: 'blue',
   boardSize: '4x4',
   theme: 'code-vibes',
-  gameMode: 'player-vs-player'
+  gameMode: 'player-vs-player',
+  botDifficulty: 'easy'
 };

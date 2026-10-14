@@ -100,6 +100,7 @@ export function renderSettings(): string {
       </p>
 
       ${renderGameModeSettings()}
+      ${renderBotDifficultySettings()}
       ${renderColorOptions()}
       ${renderBoardOptions()}
       ${renderThemeOptions()}
@@ -139,6 +140,39 @@ function renderGameModeSettings(): string {
           value="player-vs-bot"
         />
         <span>Player vs Bot</span>
+      </label>
+    </fieldset>
+  `;
+}
+
+/**
+ * Creates the bot difficulty selection.
+ *
+ * @returns HTML markup for the difficulty options.
+ */
+function renderBotDifficultySettings(): string {
+  return `
+    <fieldset
+    id="bot-difficulty-settings"
+    class="settings__group"
+    hidden
+    disabled
+    >
+      <legend>Bot Difficulty</legend>
+
+      <label class="settings__option">
+        <input type="radio" name="bot-difficulty" value="easy" checked />
+        <span>Easy</span>
+      </label>
+
+      <label class="settings__option">
+        <input type="radio" name="bot-difficulty" value="medium" />
+        <span>Medium</span>
+      </label>
+
+      <label class="settings__option">
+        <input type="radio" name="bot-difficulty" value="hard" />
+        <span>Hard</span>
       </label>
     </fieldset>
   `;

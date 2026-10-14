@@ -10,6 +10,8 @@ import {
   renderCoinResult
 } from './templates/coin-toss-template';
 
+import { setupSettingsInteractions } from './settings/settings-interactions';
+
 import {
   createDefaultSettings,
   getGameSettings
@@ -95,7 +97,7 @@ function showHome(): void {
 }
 
 /**
- * Displays the settings screen.
+ * Displays the settings screen and registers its events.
  *
  * @returns Nothing.
  */
@@ -108,6 +110,7 @@ function showSettings(): void {
 
   setupBackButton();
   setupPlayButton();
+  setupSettingsInteractions();
 }
 
 /**

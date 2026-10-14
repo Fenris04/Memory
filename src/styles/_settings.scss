@@ -103,4 +103,8 @@
       background-color: $color-primary-hover;
     }
   }
+
+  #bot-difficulty-settings[hidden] {
+  display: none;
+  }
 }
