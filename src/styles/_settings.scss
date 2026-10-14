@@ -6,42 +6,31 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 24px;
   text-align: center;
 
   &__title {
+    margin: 0 0 16px;
+
     color: $color-primary;
     font-size: clamp(2rem, 5vw, 4rem);
   }
 
   &__description {
+    margin: 0 0 16px;
+
     color: $color-text-muted;
     font-size: 1.2rem;
-  }
-
-  #back-button {
-    margin-top: 32px;
-    padding: 14px 28px;
-
-    border: none;
-    border-radius: $border-radius;
-
-    background-color: $color-primary;
-    color: $color-background;
-
-    cursor: pointer;
-
-    &:hover {
-      background-color: $color-primary-hover;
-    }
   }
 
   &__group {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 24px;
 
+    width: min(100%, 600px);
     margin-top: 24px;
     padding: 24px;
 
@@ -49,18 +38,12 @@
     border-radius: $border-radius;
   }
 
-  // Allow option groups to wrap on smaller screens
-  &__group {
-    flex-wrap: wrap;
-    width: min(100%, 600px);
-  }
-
   &__label {
     padding: 0 8px;
 
+    color: $color-primary;
     font-size: 1.2rem;
     font-weight: 700;
-    color: $color-primary;
   }
 
   &__option {
@@ -76,35 +59,110 @@
     }
   }
 
-  // Layout for the navigation buttons
   &__actions {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 20px;
 
+    width: 100%;
     margin-top: 32px;
-  }
 
-  // Style for the Play Now button
-  #play-button {
-    padding: 14px 28px;
+    #back-button,
+    #play-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
-    border: none;
-    border-radius: $border-radius;
+      width: 190px;
+      height: 56px;
+      padding: 12px 24px;
 
-    background-color: $color-primary;
-    color: $color-background;
+      border: none;
+      border-radius: $border-radius;
 
-    font-weight: 700;
-    cursor: pointer;
+      background-color: $color-primary;
+      color: $color-background;
 
-    &:hover {
-      background-color: $color-primary-hover;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+
+      &:hover {
+        background-color: $color-primary-hover;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:focus-visible {
+        outline: 3px solid $color-primary-hover;
+        outline-offset: 4px;
+      }
+    }
+
+    #play-button {
+      font-weight: 700;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.15);
     }
   }
 
   #bot-difficulty-settings[hidden] {
-  display: none;
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .settings {
+    justify-content: flex-start;
+    padding: 24px 16px;
+
+    &__title {
+      font-size: clamp(2rem, 8vw, 3rem);
+    }
+
+    &__description {
+      font-size: 1rem;
+    }
+
+    &__group {
+      gap: 16px;
+      margin-top: 16px;
+      padding: 20px 16px;
+    }
+
+    &__actions {
+      gap: 12px;
+
+      #back-button,
+      #play-button {
+        width: min(100%, 320px);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings__actions {
+    #back-button,
+    #play-button {
+      transition: none;
+
+      &:hover,
+      &:active {
+        transform: none;
+      }
+    }
   }
 }
