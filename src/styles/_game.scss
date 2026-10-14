@@ -6,6 +6,7 @@
   margin: 0 auto;
   padding: 16px 20px 24px;
   text-align: center;
+  position: relative;
 
   &__title {
     margin: 0 0 16px;
@@ -103,6 +104,8 @@
   }
 
   #exit-button {
+    display: block;
+    margin: 0 0 12px auto;
     padding: 12px 24px;
     border: none;
     border-radius: $border-radius;

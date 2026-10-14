@@ -46,6 +46,10 @@ export function renderGame(
 ): string {
   return `
     <section class="game">
+      <button id="exit-button" type="button">
+        Exit Game
+      </button>
+
       <h1 class="game__title">Memory Game</h1>
 
       ${renderScoreboard(state, settings.playerColor, settings.gameMode)}
@@ -54,9 +58,35 @@ export function renderGame(
         ${cards.map(renderCard).join('')}
       </div>
 
-      <button id="exit-button" type="button">
-        Exit Game
-      </button>
+      ${renderExitDialog()}
     </section>
+  `;
+}
+
+/**
+ * Renders the confirmation dialog for leaving the game.
+ *
+ * @returns The exit confirmation dialog HTML.
+ */
+function renderExitDialog(): string {
+  return `
+    <dialog id="exit-dialog" class="exit-dialog">
+      <h2 class="exit-dialog__title">Leave Game?</h2>
+
+      <p class="exit-dialog__description">
+        Are you sure you want to leave?
+        Your current progress will be lost.
+      </p>
+
+      <div class="exit-dialog__actions">
+        <button id="cancel-exit-button" type="button">
+          Cancel
+        </button>
+
+        <button id="confirm-exit-button" type="button">
+          Leave Game
+        </button>
+      </div>
+    </dialog>
   `;
 }

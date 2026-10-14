@@ -429,15 +429,43 @@ function exitGame(): void {
 }
 
 /**
- * Registers the Exit Game button.
+ * Registers the exit confirmation dialog events.
  *
  * @returns Nothing.
  */
 function setupExitButton(): void {
-  const EXIT_BUTTON: HTMLElement | null =
-    document.getElementById('exit-button');
+  const EXIT_BUTTON = document.querySelector<HTMLButtonElement>('#exit-button');
+  const EXIT_DIALOG = document.querySelector<HTMLDialogElement>('#exit-dialog');
+  const CANCEL_BUTTON = document.querySelector<HTMLButtonElement>('#cancel-exit-button');
+  const CONFIRM_BUTTON = document.querySelector<HTMLButtonElement>('#confirm-exit-button');
 
-  EXIT_BUTTON?.addEventListener('click', exitGame);
+  if (!EXIT_BUTTON || !EXIT_DIALOG || !CANCEL_BUTTON || !CONFIRM_BUTTON) {
+    console.error('Exit dialog elements are missing.');
+    return;
+  }
+
+  let isLeavingGame = false;
+
+  EXIT_BUTTON.addEventListener('click', (): void => {
+    cancelBotTurn();
+    EXIT_DIALOG.showModal();
+  });
+
+  CANCEL_BUTTON.addEventListener('click', (): void => {
+    EXIT_DIALOG.close();
+  });
+
+  EXIT_DIALOG.addEventListener('close', (): void => {
+    if (!isLeavingGame && isBotTurn()) {
+      scheduleBotTurn();
+    }
+  });
+
+  CONFIRM_BUTTON.addEventListener('click', (): void => {
+    isLeavingGame = true;
+    EXIT_DIALOG.close();
+    exitGame();
+  });
 }
 
 /**
