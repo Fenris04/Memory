@@ -222,73 +222,81 @@
   }
 
   &__actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 18px;
 
-    width: 100%;
-    min-height: 82px;
-    padding: 12px 18px;
+  width: 100%;
+  min-height: 82px;
+  padding: 12px 18px;
 
-    background-color: #f5f5f5;
-  }
+  background-color: #f5f5f5;
+}
 
-  &__summary {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+&__summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 
-    min-width: 0;
+  min-width: 0;
 
-    color: #303030;
-    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
-    white-space: nowrap;
-  }
+  color: #303030;
+  font-size: 1.15rem;
+  white-space: nowrap;
+}
 
-  &__separator {
-    display: block;
-    flex: 0 0 6px;
+&__separator {
+  display: block;
+  flex: 0 0 6px;
 
-    width: 6px;
-    height: 46px;
+  width: 6px;
+  height: 46px;
 
-    background-color: #f0ea6e;
-    transform: skew(-20deg);
-  }
+  background-color: #f0ea6e;
+  transform: skew(-20deg);
+}
 
   #play-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
 
-    min-width: 126px;
-    min-height: 54px;
-    padding: 12px 16px;
+  min-width: 126px;
+  min-height: 54px;
+  padding: 12px 16px;
 
-    border: none;
-    border-radius: 0;
+  border: none;
+  border-radius: 0;
 
+  background-color: #f0ea6e;
+  color: #303030;
+
+  font-size: 1.3rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.4s ease,
+    background-color 0.4s ease;
+
+  &:hover {
     background-color: #f0ea6e;
-    color: #303030;
-
-    font-size: 1.3rem;
-    font-weight: 700;
-
-    cursor: pointer;
-    transition: background-color 0.35s ease;
-
-    &:hover {
-      background-color: #e8e15c;
-    }
-
-    &:focus-visible {
-      outline: 3px solid #303030;
-      outline-offset: 3px;
-    }
+    transform: scale(1.08);
   }
+
+  &:active {
+    transform: scale(1.03);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #303030;
+    outline-offset: 3px;
+  }
+}
 
   &__start-icon {
     display: block;
@@ -346,7 +354,7 @@
 
     &__summary {
       gap: 10px;
-      font-size: 0.85rem;
+      font-size: 1rem;
     }
   }
 }
