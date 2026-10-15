@@ -1,91 +1,382 @@
+
 @use 'variables' as *;
 
 .exit-dialog {
-  width: min(90%, 420px);
-  padding: 32px;
+  width: min(670px, calc(100% - 24px));
+  max-width: none;
+  margin: auto;
+  padding: 48px 36px 42px;
 
-  border: 1px solid $color-primary;
-  border-radius: $border-radius;
+  border: none;
+  border-radius: 0;
 
-  background-color: $color-background;
-  color: $color-text;
+  background-color: #ffffff;
+  color: #303030;
   text-align: center;
 
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
 
   &::backdrop {
-    background-color: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.55);
   }
 
   &__title {
-    margin: 0 0 16px;
-    color: $color-primary;
-    font-size: 1.8rem;
+    max-width: 590px;
+    margin: 0 auto 64px;
+
+    color: #303030;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
   }
 
   &__description {
-    margin: 0 0 28px;
-    color: $color-text-muted;
-    line-height: 1.6;
+    display: none;
   }
 
   &__actions {
     display: flex;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
+    gap: 30px;
+  }
 
-    button {
-      min-width: 140px;
-      padding: 14px 20px;
+  #cancel-exit-button,
+  #confirm-exit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-      border: none;
-      border-radius: $border-radius;
+    min-height: 72px;
+    padding: 14px 28px;
 
-      font-weight: 700;
-      cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 0;
 
-      transition: transform 0.2s ease;
+    font-family: inherit;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
 
-      &:hover {
-        transform: translateY(-2px);
-      }
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
 
-      &:focus-visible {
-        outline: 3px solid $color-primary;
-        outline-offset: 3px;
-      }
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 3px solid currentColor;
+      outline-offset: 4px;
     }
   }
 
   #cancel-exit-button {
-    background-color: $color-primary;
-    color: $color-background;
+    background-color: #60cbbb;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #39b5a2;
+    }
   }
 
   #confirm-exit-button {
-    background-color: #ef4444;
-    color: #fff;
+    background-color: #e9faf6;
+    border-color: #49d5bd;
+    color: #49d5bd;
+
+    &:hover {
+      background-color: #49d5bd;
+      color: #ffffff;
+    }
   }
 }
 
-@media (max-width: 480px) {
-  .exit-dialog {
-    padding: 24px 16px;
+.game[data-theme='code-vibes'] .exit-dialog {
+  font-family: 'Inter', sans-serif;
 
-    &__actions {
+  width: min(675px, calc(100% - 24px));
+  padding: 48px 36px 42px;
+
+  border-radius: 0;
+  background-color: #ffffff;
+
+  &__title {
+    max-width: 590px;
+    margin: 0 auto 64px;
+
+    color: #303030;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  &__actions {
+    gap: 30px;
+  }
+
+  #cancel-exit-button,
+  #confirm-exit-button {
+    min-height: 72px;
+    padding: 14px 28px;
+
+    border-radius: 0;
+    font-size: 1.45rem;
+  }
+
+  #cancel-exit-button {
+    background-color: #60cbbb;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #39b5a2;
+    }
+  }
+
+  #confirm-exit-button {
+    background-color: #e9faf6;
+    border-color: #49d5bd;
+    color: #49d5bd;
+
+    &:hover {
+      background-color: #49d5bd;
+      color: #ffffff;
+    }
+  }
+}
+
+.game[data-theme='gaming'] .exit-dialog {
+  font-family: 'Orbitron', sans-serif;
+
+  width: min(600px, calc(100% - 24px));
+  padding: 50px 32px 54px;
+
+  border-radius: 24px;
+  background-color: #eff7fa;
+
+  &__title {
+    max-width: 540px;
+    margin: 0 auto 72px;
+
+    color: #294e60;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+  }
+
+  &__actions {
+    gap: 30px;
+  }
+
+  #cancel-exit-button,
+  #confirm-exit-button {
+    min-height: 56px;
+    padding: 12px 22px;
+
+    border-radius: 12px;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  #cancel-exit-button {
+    background-color: #f3156c;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #c80c52;
+      box-shadow: 0 4px 12px rgba(243, 21, 108, 0.3);
+    }
+  }
+
+  #confirm-exit-button {
+    background-color: transparent;
+    border-color: #f3156c;
+    color: #f3156c;
+
+    &:hover {
+      background-color: #f3156c;
+      color: #ffffff;
+    }
+  }
+}
+
+.game[data-theme='da-projects'] .exit-dialog {
+  font-family: 'Inter', sans-serif;
+
+  width: min(565px, calc(100% - 24px));
+  padding: 52px 32px 56px;
+
+  border-radius: 24px;
+  background-color: #eff7fa;
+
+  &__title {
+    max-width: 490px;
+    margin: 0 auto 72px;
+
+    color: #294e60;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &__actions {
+    gap: 30px;
+  }
+
+  #cancel-exit-button,
+  #confirm-exit-button {
+    min-height: 54px;
+    padding: 12px 24px;
+
+    border-radius: 12px;
+
+    font-size: 1.1rem;
+    font-weight: 700;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.14);
+  }
+
+  #cancel-exit-button {
+    background-color: #bfe6f2;
+    color: #217b9c;
+
+    &:hover {
+      background-color: #217b9c;
+      color: #ffffff;
+      box-shadow: 0 6px 12px rgba(33, 123, 156, 0.2);
+    }
+  }
+
+  #confirm-exit-button {
+    background-color: #ff8b85;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #ed6c66;
+      box-shadow: 0 6px 12px rgba(237, 108, 102, 0.25);
+    }
+  }
+}
+
+.game[data-theme='food'] .exit-dialog {
+  font-family: 'Quicksand', sans-serif;
+
+  width: min(575px, calc(100% - 24px));
+  padding: 52px 36px 56px;
+
+  border-radius: 24px;
+  background-color: #f7f7f7;
+
+  &__title {
+    max-width: 490px;
+    margin: 0 auto 64px;
+
+    color: #ad531a;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  &__actions {
+    gap: 28px;
+  }
+
+  #cancel-exit-button,
+  #confirm-exit-button {
+    min-height: 56px;
+    padding: 12px 24px;
+
+    border-radius: 14px;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  #cancel-exit-button {
+    background-color: #ffab40;
+    border-color: #ff8a1d;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #f97316;
+      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);
+    }
+  }
+
+  #confirm-exit-button {
+    background-color: #ffffff;
+    border-color: #f97316;
+    color: #f97316;
+
+    &:hover {
+      background-color: #f97316;
+      color: #ffffff;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .exit-dialog,
+  .game[data-theme='code-vibes'] .exit-dialog,
+  .game[data-theme='gaming'] .exit-dialog,
+  .game[data-theme='da-projects'] .exit-dialog,
+  .game[data-theme='food'] .exit-dialog {
+    padding: 36px 20px;
+
+    .exit-dialog__title {
+      max-width: 100%;
+      margin-bottom: 40px;
+
+      font-size: clamp(1.4rem, 5vw, 1.8rem);
+      line-height: 1.4;
+    }
+
+    .exit-dialog__actions {
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    #cancel-exit-button,
+    #confirm-exit-button {
+      min-height: 54px;
+      padding: 12px 16px;
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .exit-dialog,
+  .game[data-theme='code-vibes'] .exit-dialog,
+  .game[data-theme='gaming'] .exit-dialog,
+  .game[data-theme='da-projects'] .exit-dialog,
+  .game[data-theme='food'] .exit-dialog {
+    .exit-dialog__actions {
       flex-direction: column;
+    }
 
-      button {
-        width: 100%;
-      }
+    #cancel-exit-button,
+    #confirm-exit-button {
+      width: 100%;
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .exit-dialog__actions button {
-    transition: none;
+  .exit-dialog {
+    #cancel-exit-button,
+    #confirm-exit-button {
+      transition: none;
+    }
   }
 }

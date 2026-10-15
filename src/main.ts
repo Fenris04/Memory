@@ -1,9 +1,10 @@
+
 import './styles/style.scss';
 
 import { renderHome } from './templates/home-template';
 import {
   renderSettings,
-  initializeThemePreview,
+  initializeThemePreview
 } from './templates/settings-template';
 import { renderGame } from './templates/game-template';
 import { renderScoreboard } from './templates/score-template';
@@ -106,6 +107,11 @@ function showHome(): void {
   START_BUTTON?.addEventListener('click', showSettings);
 }
 
+/**
+ * Displays the settings screen.
+ *
+ * @returns Nothing.
+ */
 function showSettings(): void {
   if (!CONTENT) {
     return;
@@ -120,7 +126,7 @@ function showSettings(): void {
 }
 
 /**
- * Registers the Back to Home button.
+ * Registers the Back button.
  *
  * @returns Nothing.
  */
@@ -132,7 +138,7 @@ function setupBackButton(): void {
 }
 
 /**
- * Registers the Play Now button.
+ * Registers the Play button.
  *
  * @returns Nothing.
  */
@@ -221,7 +227,7 @@ function showCoinToss(startingPlayer: PlayerNumber): void {
 }
 
 /**
- * Starts a new game with the selected bot difficulty.
+ * Starts a new game with the selected settings.
  *
  * @returns Nothing.
  */
@@ -236,9 +242,7 @@ function startGame(): void {
 }
 
 /**
- * Starts a rematch with the previous loser's first turn.
- *
- * A draw triggers another coin toss.
+ * Starts a rematch.
  *
  * @returns Nothing.
  */
@@ -248,7 +252,8 @@ function startRematch(): void {
   }
 
   const IS_DRAW: boolean = getWinner(gameState) === null;
-  const STARTING_PLAYER: PlayerNumber = getNextStartingPlayer(gameState);
+  const STARTING_PLAYER: PlayerNumber =
+    getNextStartingPlayer(gameState);
 
   cancelBotTurn();
   createNewRound(STARTING_PLAYER);
@@ -286,7 +291,7 @@ function updateScoreboard(): void {
 }
 
 /**
- * Displays the result screen after the final pair.
+ * Displays the completed game's result screen.
  *
  * @returns Nothing.
  */
@@ -301,7 +306,8 @@ function showGameOver(): void {
   CONTENT.innerHTML = renderGameOver(
     gameState,
     gameSettings.playerColor,
-    gameSettings.gameMode
+    gameSettings.gameMode,
+    gameSettings.theme
   );
 
   setupHomeButton();
@@ -309,7 +315,7 @@ function showGameOver(): void {
 }
 
 /**
- * Registers the Back to Home button.
+ * Registers the Home button.
  *
  * @returns Nothing.
  */
@@ -333,7 +339,7 @@ function setupRematchButton(): void {
 }
 
 /**
- * Awards a point and schedules another bot turn if needed.
+ * Awards a point and checks whether the game is finished.
  *
  * @returns Nothing.
  */
@@ -356,7 +362,7 @@ function handleGameMatch(): void {
 }
 
 /**
- * Switches players and starts the bot when needed.
+ * Switches players after an unsuccessful attempt.
  *
  * @returns Nothing.
  */
@@ -374,9 +380,9 @@ function handleGameMiss(): void {
 }
 
 /**
- * Registers the game events and controls human card selection.
+ * Registers card interaction events.
  *
- * @param cards - All cards in the current game.
+ * @param cards - The cards in the current game.
  * @returns Nothing.
  */
 function setupGameEvents(cards: MemoryCard[]): void {
@@ -391,7 +397,7 @@ function setupGameEvents(cards: MemoryCard[]): void {
 }
 
 /**
- * Displays the game board and starts the bot when needed.
+ * Displays the game board.
  *
  * @returns Nothing.
  */
@@ -402,7 +408,11 @@ function showGame(): void {
 
   const CARDS: MemoryCard[] = createGameCards();
 
-  CONTENT.innerHTML = renderGame(CARDS, gameSettings, gameState);
+  CONTENT.innerHTML = renderGame(
+    CARDS,
+    gameSettings,
+    gameState
+  );
 
   setupGameEvents(CARDS);
   setupExitButton();
@@ -413,7 +423,7 @@ function showGame(): void {
 }
 
 /**
- * Exits the current game and cancels pending actions.
+ * Exits the game and returns to the home screen.
  *
  * @returns Nothing.
  */
@@ -427,22 +437,48 @@ function exitGame(): void {
 }
 
 /**
- * Registers the exit confirmation dialog events.
+ * Exits the game and returns to the settings screen.
+ *
+ * @returns Nothing.
+ */
+function exitGameToSettings(): void {
+  cancelBotTurn();
+  resetCoinToss();
+  resetCardInteractions();
+
+  gameState = null;
+  showSettings();
+}
+
+/**
+ * Registers the exit confirmation dialog.
  *
  * @returns Nothing.
  */
 function setupExitButton(): void {
-  const EXIT_BUTTON = document.querySelector<HTMLButtonElement>('#exit-button');
-  const EXIT_DIALOG = document.querySelector<HTMLDialogElement>('#exit-dialog');
-  const CANCEL_BUTTON = document.querySelector<HTMLButtonElement>('#cancel-exit-button');
-  const CONFIRM_BUTTON = document.querySelector<HTMLButtonElement>('#confirm-exit-button');
+  const EXIT_BUTTON: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>('#exit-button');
 
-  if (!EXIT_BUTTON || !EXIT_DIALOG || !CANCEL_BUTTON || !CONFIRM_BUTTON) {
+  const EXIT_DIALOG: HTMLDialogElement | null =
+    document.querySelector<HTMLDialogElement>('#exit-dialog');
+
+  const CANCEL_BUTTON: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>('#cancel-exit-button');
+
+  const CONFIRM_BUTTON: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>('#confirm-exit-button');
+
+  if (
+    !EXIT_BUTTON ||
+    !EXIT_DIALOG ||
+    !CANCEL_BUTTON ||
+    !CONFIRM_BUTTON
+  ) {
     console.error('Exit dialog elements are missing.');
     return;
   }
 
-  let isLeavingGame = false;
+  let isLeavingGame: boolean = false;
 
   EXIT_BUTTON.addEventListener('click', (): void => {
     cancelBotTurn();
@@ -455,24 +491,15 @@ function setupExitButton(): void {
 
   EXIT_DIALOG.addEventListener('close', (): void => {
     if (!isLeavingGame && isBotTurn()) {
-    scheduleBotTurn();
+      resumeBotTurn();
     }
   });
 
   CONFIRM_BUTTON.addEventListener('click', (): void => {
     isLeavingGame = true;
     EXIT_DIALOG.close();
-    exitGame();
+    exitGameToSettings();
   });
-}
-
-/**
- * Initializes the Memory Game application.
- *
- * @returns Nothing.
- */
-function init(): void {
-  showHome();
 }
 
 /**
@@ -483,6 +510,15 @@ function init(): void {
 function isBotTurn(): boolean {
   return gameSettings.gameMode === 'player-vs-bot' &&
     gameState?.currentPlayer === 2;
+}
+
+/**
+ * Initializes the application.
+ *
+ * @returns Nothing.
+ */
+function init(): void {
+  showHome();
 }
 
 init();

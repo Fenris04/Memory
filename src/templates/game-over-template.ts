@@ -1,3 +1,4 @@
+
 import { getWinner } from '../game/game-state';
 import { getPlayerName } from '../game/player-utils';
 
@@ -8,6 +9,7 @@ import type {
 
 import type {
   GameMode,
+  GameSettings,
   PlayerColor
 } from '../settings/game-settings';
 
@@ -38,40 +40,6 @@ function getWinnerColor(
 }
 
 /**
- * Creates the result heading.
- *
- * @param winner - The winning player or null.
- * @param gameMode - The selected game mode.
- * @returns The result heading markup.
- */
-function renderResultHeading(
-  winner: PlayerNumber | null,
-  gameMode: GameMode
-): string {
-  const MESSAGE: string = winner === null
-    ? "IT'S A DRAW!"
-    : `${getPlayerName(winner, gameMode).toUpperCase()} WINS!`;
-
-  return `<h1 class="game-over__result">${MESSAGE}</h1>`;
-}
-
-/**
- * Creates the result illustration.
- *
- * @param winner - The winning player or null.
- * @returns The illustration markup.
- */
-function renderResultIcon(winner: PlayerNumber | null): string {
-  const ICON: string = winner === null ? '⚖️' : '🏆';
-
-  return `
-    <div class="game-over__icon" aria-hidden="true">
-      ${ICON}
-    </div>
-  `;
-}
-
-/**
  * Creates the final score display.
  *
  * @param state - The completed game state.
@@ -87,26 +55,102 @@ function renderFinalScores(
 
   return `
     <div class="game-over__scores">
-      <p>${FIRST_NAME}: <strong>${state.playerOneScore}</strong></p>
-      <p>${SECOND_NAME}: <strong>${state.playerTwoScore}</strong></p>
+      <span class="game-over__score">
+        <span>${FIRST_NAME}</span>
+        <strong>${state.playerOneScore}</strong>
+      </span>
+
+      <span class="game-over__score">
+        <span>${SECOND_NAME}</span>
+        <strong>${state.playerTwoScore}</strong>
+      </span>
     </div>
   `;
 }
 
 /**
- * Creates the action buttons.
+ * Creates the winner or draw heading.
+ *
+ * @param winner - The winning player or null.
+ * @param gameMode - The selected game mode.
+ * @returns The result heading markup.
+ */
+function renderResultHeading(
+  winner: PlayerNumber | null,
+  gameMode: GameMode
+): string {
+  if (winner === null) {
+    return `
+      <p class="game-over__eyebrow">It's a</p>
+      <h2 class="game-over__result">DRAW</h2>
+    `;
+  }
+
+  return `
+    <p class="game-over__eyebrow">The winner is</p>
+    <h2 class="game-over__result">
+      ${getPlayerName(winner, gameMode)}
+    </h2>
+  `;
+}
+
+/**
+ * Creates the winner or draw illustration.
+ *
+ * @param winner - The winning player or null.
+ * @param theme - The selected theme.
+ * @returns The illustration markup.
+ */
+function renderResultIcon(
+  winner: PlayerNumber | null,
+  theme: GameSettings['theme']
+): string {
+  if (winner === null) {
+    return `
+      <div
+        class="game-over__icon game-over__icon--draw"
+        aria-hidden="true"
+      >
+        ⚖
+      </div>
+    `;
+  }
+
+  if (theme === 'gaming') {
+    return `
+      <div
+        class="game-over__icon game-over__icon--trophy"
+        aria-hidden="true"
+      >
+        🏆
+      </div>
+    `;
+  }
+
+  return `
+    <div
+      class="game-over__icon game-over__icon--player"
+      aria-hidden="true"
+    >
+      ♟
+    </div>
+  `;
+}
+
+/**
+ * Creates the result action buttons.
  *
  * @returns The action button markup.
  */
 function renderResultActions(): string {
   return `
     <div class="game-over__actions">
-      <button id="rematch-button" type="button">
-        Rematch
+      <button id="home-button" type="button">
+        Home
       </button>
 
-      <button id="home-button" type="button">
-        Back to Home
+      <button id="rematch-button" type="button">
+        Rematch
       </button>
     </div>
   `;
@@ -118,12 +162,14 @@ function renderResultActions(): string {
  * @param state - The completed game state.
  * @param playerColor - The selected color of Player 1.
  * @param gameMode - The selected game mode.
+ * @param theme - The selected theme.
  * @returns HTML markup for the result screen.
  */
 export function renderGameOver(
   state: GameState,
   playerColor: PlayerColor,
-  gameMode: GameMode
+  gameMode: GameMode,
+  theme: GameSettings['theme']
 ): string {
   const WINNER: PlayerNumber | null = getWinner(state);
 
@@ -132,14 +178,26 @@ export function renderGameOver(
     : getWinnerColor(WINNER, playerColor);
 
   return `
-    <section class="game-over" data-result="${RESULT_COLOR}">
-      ${renderResultHeading(WINNER, gameMode)}
-      ${renderResultIcon(WINNER)}
+    <section
+      class="game-over"
+      data-theme="${theme}"
+      data-result="${RESULT_COLOR}"
+    >
+      <div class="game-over__intro">
+        <h1 class="game-over__title">Game Over</h1>
 
-      <h2 class="game-over__subtitle">Final Score</h2>
+        <p class="game-over__score-label">
+          Final score
+        </p>
 
-      ${renderFinalScores(state, gameMode)}
-      ${renderResultActions()}
+        ${renderFinalScores(state, gameMode)}
+      </div>
+
+      <div class="game-over__outcome">
+        ${renderResultHeading(WINNER, gameMode)}
+        ${renderResultIcon(WINNER, theme)}
+        ${renderResultActions()}
+      </div>
     </section>
   `;
 }
