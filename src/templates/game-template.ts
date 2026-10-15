@@ -1,3 +1,4 @@
+
 import type { MemoryCard } from '../game/card-types';
 import type { GameState } from '../game/game-state';
 import type { GameSettings } from '../settings/game-settings';
@@ -46,13 +47,45 @@ export function renderGame(
 ): string {
   return `
     <section class="game" data-theme="${settings.theme}">
-      <button id="exit-button" type="button">
-        Exit Game
-      </button>
+      <header class="game__header">
+        ${renderScoreboard(
+          state,
+          settings.playerColor,
+          settings.gameMode
+        )}
 
-      <h1 class="game__title">Memory Game</h1>
+        <button id="exit-button" type="button">
+          <svg
+            class="game__exit-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M10 4H5C3.9 4 3 4.9 3 6V18C3 19.1 3.9 20 5 20H10"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M13 8L17 12L13 16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 12H17"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
 
-      ${renderScoreboard(state, settings.playerColor, settings.gameMode)}
+          <span>Exit game</span>
+        </button>
+      </header>
 
       <div class="game__board" data-size="${settings.boardSize}">
         ${cards.map(renderCard).join('')}

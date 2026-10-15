@@ -1,6 +1,8 @@
+
 import type { MemoryCard } from './card-types';
 
 const FLIP_BACK_DELAY: number = 1000;
+const FLIP_ANIMATION_DURATION: number = 600;
 
 /**
  * Defines the events reported by card interactions.
@@ -15,6 +17,7 @@ export interface CardInteractionEvents {
 let revealedCards: HTMLButtonElement[] = [];
 let isBoardLocked: boolean = false;
 let flipBackTimer: number | null = null;
+let turnChangeTimer: number | null = null;
 let activeCards: MemoryCard[] = [];
 let activeEvents: CardInteractionEvents | null = null;
 
@@ -109,8 +112,21 @@ function markMatchedCards(
 function hideMismatchedCards(): void {
   revealedCards.forEach(hideCard);
   revealedCards = [];
-  isBoardLocked = false;
   flipBackTimer = null;
+}
+
+/**
+ * Finishes a missed turn after the flip animation.
+ *
+ * @param events - The registered game events.
+ * @returns Nothing.
+ */
+function finishMissedTurn(events: CardInteractionEvents): void {
+  turnChangeTimer = null;
+
+  events.onMiss();
+
+  isBoardLocked = false;
 }
 
 /**
@@ -134,10 +150,16 @@ function handleMatch(events: CardInteractionEvents): void {
  */
 function handleMiss(events: CardInteractionEvents): void {
   isBoardLocked = true;
-  events.onMiss();
 
   flipBackTimer = window.setTimeout(
-    hideMismatchedCards,
+    (): void => {
+      hideMismatchedCards();
+
+      turnChangeTimer = window.setTimeout(
+        (): void => finishMissedTurn(events),
+        FLIP_ANIMATION_DURATION
+      );
+    },
     FLIP_BACK_DELAY
   );
 }
@@ -243,6 +265,7 @@ export function setupCardInteractions(
   events: CardInteractionEvents
 ): void {
   resetCardInteractions();
+
   activeCards = cards;
   activeEvents = events;
 
@@ -250,7 +273,10 @@ export function setupCardInteractions(
     document.querySelectorAll<HTMLButtonElement>('.game__card');
 
   CARD_ELEMENTS.forEach((card: HTMLButtonElement): void => {
-    card.addEventListener('click', (): void => handleHumanClick(card));
+    card.addEventListener(
+      'click',
+      (): void => handleHumanClick(card)
+    );
   });
 }
 
@@ -264,7 +290,12 @@ export function resetCardInteractions(): void {
     window.clearTimeout(flipBackTimer);
   }
 
+  if (turnChangeTimer !== null) {
+    window.clearTimeout(turnChangeTimer);
+  }
+
   flipBackTimer = null;
+  turnChangeTimer = null;
   revealedCards = [];
   isBoardLocked = false;
   activeCards = [];

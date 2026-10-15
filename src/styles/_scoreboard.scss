@@ -1,73 +1,103 @@
+
 @use 'variables' as *;
 
 .scoreboard {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 1.2fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  max-width: 760px;
-  margin: 0 auto 20px;
+  display: contents;
 
-  &__player {
-    padding: 12px 16px;
-    border: 2px solid transparent;
-    border-radius: $border-radius;
-    background-color: rgba(255, 255, 255, 0.04);
-    opacity: 0.65;
-    transition:
-      border-color 0.2s ease,
-      opacity 0.2s ease,
-      transform 0.2s ease;
+  &__scores {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 24px;
 
-    &.is-active {
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-
-    &--blue.is-active {
-      border-color: #38bdf8;
-    }
-
-    &--orange.is-active {
-      border-color: #fb923c;
-    }
+    padding: 10px 14px;
+    border-radius: 10px;
+    background-color: #ffffff;
   }
 
-  &__name {
-    margin: 0 0 6px;
-    font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  &__player {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 1.6rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__player--orange {
+    color: #f97316;
+  }
+
+  &__player--blue {
+    color: #0284c7;
+  }
+
+  &__player-icon {
+    display: block;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  &__color-name {
+    display: none;
   }
 
   &__score {
     margin: 0;
-    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-size: inherit;
     font-weight: 700;
   }
 
   &__turn {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-self: center;
     justify-content: center;
-    min-height: 60px;
-    text-align: center;
+    gap: 14px;
+    min-width: 0;
   }
 
   &__turn-label {
     margin: 0;
-    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    color: var(--game-header-text, #217b9c);
+    font-size: 1.8rem;
     font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__current-player {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+    border-radius: 7px;
+    color: #ffffff;
+  }
+
+  &__current-player--blue {
+    background-color: #0284c7;
+  }
+
+  &__current-player--orange {
+    background-color: #f97316;
+  }
+
+  &__current-player .scoreboard__player-icon {
+    width: 36px;
+    height: 36px;
   }
 
   &__thinking {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 8px 0 0;
-    font-size: 0.8rem;
-    opacity: 0.85;
+    gap: 5px;
+
+    color: var(--game-header-text, #217b9c);
+    font-size: 0.85rem;
     white-space: nowrap;
   }
 
@@ -94,6 +124,89 @@
   }
 }
 
+// Food theme
+.game[data-theme='food'] {
+  .scoreboard__turn-label {
+    color: #ad531a;
+    font-weight: 400;
+  }
+
+  .scoreboard__scores {
+    background-color: #ffffff;
+  }
+}
+
+// DA Projects theme
+.game[data-theme='da-projects'] {
+  .scoreboard__turn-label {
+    color: #217b9c;
+    font-weight: 800;
+  }
+
+  .scoreboard__scores {
+    background-color: #ffffff;
+  }
+}
+
+// Gaming theme
+.game[data-theme='gaming'] {
+  .scoreboard__turn-label {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .scoreboard__scores {
+    background-color: #ffffff;
+  }
+}
+
+// Code Vibes theme
+.game[data-theme='code-vibes'] {
+  .scoreboard__scores {
+    gap: 20px;
+    background-color: #405751;
+    border-radius: 0;
+  }
+
+  .scoreboard__player {
+    font-size: 1.5rem;
+  }
+
+  .scoreboard__color-name {
+    display: inline;
+  }
+
+  // Hide player icons only inside the score display.
+  .scoreboard__scores .scoreboard__player-icon {
+    display: none;
+  }
+
+  .scoreboard__turn-label {
+    color: #ffffff;
+    font-weight: 400;
+  }
+
+  .scoreboard__current-player {
+    background-color: transparent;
+  }
+
+  // Keep the current player's icon visible.
+  .scoreboard__current-player .scoreboard__player-icon {
+    display: block;
+    width: 36px;
+    height: 36px;
+  }
+
+  .scoreboard__current-player--blue {
+    color: #20aaf0;
+  }
+
+  .scoreboard__current-player--orange {
+    color: #f97316;
+  }
+}
+
 @keyframes bot-thinking {
   0%,
   60%,
@@ -108,35 +221,102 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .scoreboard {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    &__scores {
+      gap: 14px;
+      padding: 8px 10px;
+    }
 
     &__player {
-      padding: 10px;
+      font-size: 1.2rem;
+    }
+
+    &__player-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    &__turn-label {
+      font-size: 1.3rem;
+    }
+
+    &__current-player {
+      width: 36px;
+      height: 36px;
+    }
+
+    &__current-player .scoreboard__player-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .game[data-theme='code-vibes'] {
+    .scoreboard__player {
+      font-size: 1.1rem;
+    }
+
+    .scoreboard__current-player .scoreboard__player-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .scoreboard {
+    &__scores {
+      gap: 10px;
+      padding: 7px 9px;
+    }
+
+    &__player {
+      font-size: 1rem;
+    }
+
+    &__player-icon {
+      width: 18px;
+      height: 18px;
     }
 
     &__turn {
-      grid-column: 1 / -1;
-      grid-row: 2;
-      min-height: 35px;
+      gap: 8px;
+    }
+
+    &__turn-label {
+      font-size: 1rem;
+    }
+
+    &__current-player {
+      width: 28px;
+      height: 28px;
+    }
+
+    &__current-player .scoreboard__player-icon {
+      width: 21px;
+      height: 21px;
     }
 
     &__thinking {
-      margin-top: 4px;
+      font-size: 0.7rem;
+    }
+  }
+
+  .game[data-theme='code-vibes'] {
+    .scoreboard__player {
+      font-size: 0.9rem;
+    }
+
+    .scoreboard__current-player .scoreboard__player-icon {
+      width: 21px;
+      height: 21px;
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scoreboard {
-    &__player {
-      transition: none;
-    }
-
-    &__thinking-dots span {
-      animation: none;
-    }
+  .scoreboard__thinking-dots span {
+    animation: none;
   }
 }

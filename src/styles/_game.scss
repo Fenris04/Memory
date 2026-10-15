@@ -1,28 +1,125 @@
+
 @use 'variables' as *;
 
-.game {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 16px 20px 24px;
-  text-align: center;
-  position: relative;
+// Set the page background for each game theme.
+body:has(.game) {
+  background-color: #ffffff;
+}
 
-  &__title {
-  margin: 0 0 16px;
-  color: var(--theme-primary);
-  font-size: clamp(1.4rem, 2vw, 2rem);
+body:has(.game) #app {
+  min-height: 100dvh;
+  background-color: transparent;
+}
+
+body:has(.game[data-theme='code-vibes']) {
+  background-color: #303030;
+}
+
+body:has(.game[data-theme='da-projects']) {
+  background-color: #ffffff;
+}
+
+body:has(.game[data-theme='gaming']) {
+  background-color: #294e60;
+}
+
+body:has(.game[data-theme='food']) {
+  background-color: #ffffff;
+}
+
+// Game screen
+.game {
+  --game-background: #303030;
+  --game-header-background: #303030;
+  --game-header-text: #ffffff;
+  --game-exit-color: #ffffff;
+  --game-exit-background: #365950;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  width: min(100% - 32px, 1000px);
+  min-height: 0;
+  height: auto;
+
+  margin: 40px auto;
+  padding: 24px 32px 40px;
+
+  border-radius: 24px;
+  background-color: var(--game-background);
+  color: #303030;
+
+  // Code Vibes theme
+  &[data-theme='code-vibes'] {
+    --game-background: #303030;
+    --game-header-background: #303030;
+    --game-header-text: #ffffff;
+    --game-exit-color: #ffffff;
+    --game-exit-background: #365950;
+
+    border-radius: 0;
   }
 
+  // DA Projects theme
+  &[data-theme='da-projects'] {
+    --game-background: #bfe6f2;
+    --game-header-background: #f0f3f4;
+    --game-header-text: #217b9c;
+    --game-exit-color: #217b9c;
+    --game-exit-background: #bfe6f2;
+  }
+
+  // Gaming theme
+  &[data-theme='gaming'] {
+    --game-background: #294e60;
+    --game-header-background: #566581;
+    --game-header-text: #ffffff;
+    --game-exit-color: #ffffff;
+    --game-exit-background: #566581;
+
+    border-radius: 0;
+    background-image: none;
+  }
+
+  // Food theme
+  &[data-theme='food'] {
+    --game-background: #ffffff;
+    --game-header-background: #f0e4d8;
+    --game-header-text: #ad531a;
+    --game-exit-color: #f97316;
+    --game-exit-background: #ffffff;
+
+    border-radius: 0;
+  }
+
+  // Game header
+  &__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 20px;
+
+    width: 100%;
+    min-height: 110px;
+    margin-bottom: 48px;
+    padding: 16px 24px;
+
+    border-radius: 16px;
+    background-color: var(--game-header-background);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16);
+  }
+
+  // Memory board
   &__board {
     display: grid;
     gap: 10px;
     width: 100%;
-    margin: 0 auto 20px;
+    margin: 0 auto;
     padding: 8px;
-    border: 2px solid var(--theme-secondary);
+
+    border: none;
     border-radius: $border-radius;
-    
 
     &[data-size='4x4'] {
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -40,13 +137,16 @@
     }
   }
 
+  // Memory cards
   &__card {
     position: relative;
     width: 100%;
     padding: 0;
+
     border: none;
     border-radius: $border-radius;
     background: transparent;
+
     aspect-ratio: 1;
     cursor: pointer;
     perspective: 1000px;
@@ -61,6 +161,7 @@
       display: block;
       width: 100%;
       height: 100%;
+
       transition: transform 0.6s ease;
       transform-style: preserve-3d;
     }
@@ -70,6 +171,7 @@
       inset: 0;
       display: block;
       overflow: hidden;
+
       border-radius: $border-radius;
       backface-visibility: hidden;
 
@@ -89,17 +191,16 @@
       transform: rotateY(180deg);
     }
 
-    // Highlight successfully matched cards
-  &.is-matched {
-    cursor: default;
+    &.is-matched {
+      cursor: default;
 
-    .game__card-inner {
-      animation: matched-card-pop 0.5s ease-out;
-    }
+      .game__card-inner {
+        animation: matched-card-pop 0.5s ease-out;
+      }
 
-    .game__card-face {
-      box-shadow: inset 0 0 0 3px #4ade80;
-    }
+      .game__card-face {
+        box-shadow: inset 0 0 0 3px #4ade80;
+      }
     }
 
     &:disabled {
@@ -107,15 +208,118 @@
     }
   }
 
+  // Exit button base styles
   #exit-button {
-    display: block;
-    margin: 0 0 12px auto;
-    padding: 12px 24px;
-    border: none;
-    border-radius: $border-radius;
-    background-color: var(--theme-primary);
-    color: $color-background;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: end;
+    gap: 10px;
+
+    min-height: 48px;
+    padding: 10px 20px;
+
+    border: 2px solid transparent;
+    border-radius: 10px;
+
+    background-color: var(--game-exit-background);
+    color: var(--game-exit-color);
+
+    font-size: 1.15rem;
+    font-weight: 700;
+    white-space: nowrap;
     cursor: pointer;
+
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+
+    &:focus-visible {
+      outline: 3px solid currentColor;
+      outline-offset: 3px;
+    }
+  }
+
+  &__exit-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  // Code Vibes exit button
+  &[data-theme='code-vibes'] #exit-button {
+    background-color: #365950;
+    border-color: #4a9b89;
+    border-radius: 0;
+    color: #ffffff;
+
+    &:hover {
+      border-color: #55c9ad;
+      box-shadow: 0 0 0 2px rgba(85, 201, 173, 0.25);
+    }
+  }
+
+  // DA Projects exit button
+  &[data-theme='da-projects'] #exit-button {
+    background-color: #bfe6f2;
+    color: #217b9c;
+
+    &:hover {
+      background-color: #217b9c;
+      color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  // Gaming exit button
+  &[data-theme='gaming'] #exit-button {
+    background-color: #566581;
+    border-color: #ff1464;
+    border-radius: 12px;
+    color: #ffffff;
+
+    &:hover {
+      box-shadow: 0 0 0 2px #ff1464;
+
+      .game__exit-icon {
+        color: #ff1464;
+      }
+    }
+  }
+
+  // Food exit button
+  &[data-theme='food'] #exit-button {
+    background-color: #ffffff;
+    border-color: #f97316;
+    border-radius: 12px;
+    color: #f97316;
+
+    &:hover {
+      background-color: #f97316;
+      color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  // Theme-specific header styles
+  &[data-theme='code-vibes'] .game__header,
+  &[data-theme='food'] .game__header {
+    box-shadow: none;
+  }
+
+  &[data-theme='code-vibes'] .game__header {
+    border-radius: 0;
+  }
+
+  &[data-theme='food'] .game__header {
+    background-color: #f0e4d8;
+  }
+
+  &[data-theme='da-projects'] .game__header {
+    background-color: #f0f3f4;
   }
 }
 
@@ -136,17 +340,73 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .game {
-    padding: 12px 12px 20px;
+    &__header {
+      gap: 12px;
+      min-height: 90px;
+      padding: 12px 16px;
+    }
 
-    &__title {
-      margin-bottom: 12px;
+    #exit-button {
+      padding: 8px 14px;
+      font-size: 1rem;
+    }
+
+    &__exit-icon {
+      width: 19px;
+      height: 19px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .game {
+    width: min(100% - 24px, 1000px);
+    padding: 20px 20px 32px;
+
+    &__header {
+      margin-bottom: 32px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .game {
+    &__header {
+      grid-template-columns: 1fr auto;
+      row-gap: 14px;
+    }
+
+    .scoreboard__turn {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    #exit-button {
+      grid-column: 2;
+      grid-row: 1;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .game {
+    width: calc(100% - 16px);
+    margin: 12px auto;
+    padding: 12px 10px 24px;
+    border-radius: 16px;
+
+    &__header {
+      gap: 12px;
+      min-height: 0;
+      margin-bottom: 24px;
+      padding: 12px 10px;
     }
 
     &__board {
       gap: 6px;
-      margin-bottom: 16px;
+      padding: 4px;
 
       &[data-size='4x4'],
       &[data-size='4x6'],
@@ -154,15 +414,32 @@
         max-width: 100%;
       }
     }
+
+    #exit-button {
+      min-height: 38px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+    }
+
+    &__exit-icon {
+      width: 16px;
+      height: 16px;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game__card-inner {
-    transition: none;
-  }
+  .game {
+    &__card-inner {
+      transition: none;
+    }
 
-  .game__card.is-matched .game__card-inner {
-    animation: none;
+    &__card.is-matched .game__card-inner {
+      animation: none;
+    }
+
+    #exit-button {
+      transition: none;
+    }
   }
 }
