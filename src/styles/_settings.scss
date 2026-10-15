@@ -1,3 +1,4 @@
+
 @use 'variables' as *;
 
 .settings {
@@ -13,7 +14,7 @@
   }
 
   &__header {
-    margin-bottom: 64px;
+    margin-bottom: 56px;
   }
 
   &__title {
@@ -27,7 +28,6 @@
 
   &__title-decoration {
     position: relative;
-
     width: 280px;
     height: 4px;
     margin-top: 12px;
@@ -58,8 +58,7 @@
   &__controls {
     display: flex;
     flex-direction: column;
-    gap: 48px;
-
+    gap: 52px;
     min-width: 0;
   }
 
@@ -116,10 +115,13 @@
   }
 
   &__option {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 14px;
 
+    width: fit-content;
+    max-width: 100%;
     padding: 0;
 
     color: #303030;
@@ -161,6 +163,32 @@
     &:has(input:checked) {
       font-weight: 700;
     }
+
+    &:has(input:checked)::after {
+      content: '';
+      display: block;
+      flex: 0 0 52px;
+
+      width: 52px;
+      height: 3px;
+      margin-left: 4px;
+
+      background-color: #f0ea6e;
+    }
+
+    &:has(input:checked)::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -8px;
+      z-index: 1;
+
+      width: 12px;
+      height: 12px;
+
+      background-color: #f0ea6e;
+      transform: translateY(-50%) rotate(45deg);
+    }
   }
 
   &__right {
@@ -169,6 +197,7 @@
     gap: 32px;
 
     min-width: 0;
+    padding-top: 20px;
   }
 
   &__preview {
@@ -177,7 +206,7 @@
     justify-content: center;
 
     min-width: 0;
-    min-height: 420px;
+    min-height: 460px;
     padding: 0;
     overflow: hidden;
 
@@ -186,13 +215,12 @@
 
   &__preview-image {
     display: block;
-
     width: 100%;
-    max-width: 560px;
+    max-width: 600px;
     height: auto;
 
     object-fit: contain;
-    clip-path: inset(14% 0 0 0);
+    border-radius: 16px;
   }
 
   &__actions {
@@ -201,7 +229,9 @@
     justify-content: space-between;
     gap: 16px;
 
-    padding: 14px 18px;
+    width: 100%;
+    min-height: 82px;
+    padding: 12px 18px;
 
     background-color: #f5f5f5;
   }
@@ -209,10 +239,12 @@
   &__summary {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
+
+    min-width: 0;
 
     color: #303030;
-    font-size: 1rem;
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
     white-space: nowrap;
   }
 
@@ -221,7 +253,7 @@
     flex: 0 0 6px;
 
     width: 6px;
-    height: 44px;
+    height: 46px;
 
     background-color: #f0ea6e;
     transform: skew(-20deg);
@@ -231,50 +263,69 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 
-    min-width: 135px;
-    min-height: 56px;
-    padding: 12px 20px;
+    min-width: 126px;
+    min-height: 54px;
+    padding: 12px 16px;
 
     border: none;
+    border-radius: 0;
+
     background-color: #f0ea6e;
     color: #303030;
 
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: 700;
 
     cursor: pointer;
-
-    transition: background-color 0.3s ease;
+    transition: background-color 0.35s ease;
 
     &:hover {
-      background-color: #e4de61;
+      background-color: #e8e15c;
     }
 
     &:focus-visible {
       outline: 3px solid #303030;
-      outline-offset: 4px;
+      outline-offset: 3px;
     }
   }
 
-  &__back-button {
-    display: inline-flex;
-    align-items: center;
+  &__start-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 
-    margin-top: 40px;
-    padding: 10px 0;
+    transition: transform 0.35s ease;
+  }
+
+  #play-button:hover .settings__start-icon {
+    transform: rotate(-8deg);
+  }
+
+  #play-button:active .settings__start-icon {
+    transform: rotate(5deg);
+  }
+
+  &__back-button {
+    align-self: flex-start;
+
+    margin: 0 0 0 44px;
+    padding: 8px 0;
 
     border: none;
     background: transparent;
-    color: #303030;
+    color: #666666;
 
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
 
     cursor: pointer;
 
     &:hover {
+      color: #303030;
       text-decoration: underline;
     }
 
@@ -306,6 +357,10 @@
   .settings {
     padding: 32px 20px;
 
+    &__header {
+      margin-bottom: 40px;
+    }
+
     &__layout {
       grid-template-columns: 1fr;
       gap: 48px;
@@ -317,6 +372,7 @@
 
     &__right {
       width: 100%;
+      padding-top: 0;
     }
 
     &__preview {
@@ -328,10 +384,6 @@
 @media (max-width: 600px) {
   .settings {
     padding: 24px 16px;
-
-    &__header {
-      margin-bottom: 40px;
-    }
 
     &__title {
       font-size: 3rem;
@@ -358,28 +410,56 @@
 
     &__option {
       font-size: 1.1rem;
+
+      &:has(input:checked)::after {
+        flex-basis: 30px;
+        width: 30px;
+      }
+    }
+
+    &__preview {
+      min-height: 220px;
     }
 
     &__actions {
       flex-wrap: wrap;
       justify-content: center;
+      padding: 16px;
     }
 
     &__summary {
       flex-wrap: wrap;
       justify-content: center;
+      gap: 12px;
+
+      font-size: 0.9rem;
+      white-space: normal;
+    }
+
+    &__separator {
+      height: 30px;
     }
 
     #play-button {
       width: 100%;
+    }
+
+    &__back-button {
+      margin-left: 36px;
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .settings {
-    #play-button {
+    #play-button,
+    &__start-icon {
       transition: none;
+    }
+
+    #play-button:hover .settings__start-icon,
+    #play-button:active .settings__start-icon {
+      transform: none;
     }
   }
 }

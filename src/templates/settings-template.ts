@@ -1,3 +1,4 @@
+
 import codeVibesPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
 import daProjectsPreview from '../assets/Varianten/Theme-Visual/Property-1-DA-projects__2285-4173.svg';
 import foodPreview from '../assets/Varianten/Theme-Visual/Property-1-foods__2285-4059.svg';
@@ -10,7 +11,7 @@ import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-gameing__
  */
 function renderThemeOptions(): string {
   return `
-    <fieldset class="settings__group settings__group--themes">
+    <fieldset class="settings__group">
       <legend class="settings__label">
         <span class="settings__group-icon settings__group-icon--themes" aria-hidden="true">✿</span>
         Game themes
@@ -144,10 +145,7 @@ function renderBotDifficultySettings(): string {
       hidden
       disabled
     >
-      <legend class="settings__label">
-        <span class="settings__group-icon settings__group-icon--mode" aria-hidden="true">⚙</span>
-        Bot difficulty
-      </legend>
+      <legend class="settings__label">Bot Difficulty</legend>
 
       <label class="settings__option">
         <input type="radio" name="bot-difficulty" value="easy" checked />
@@ -170,9 +168,6 @@ function renderBotDifficultySettings(): string {
 /**
  * Creates the HTML structure for the settings screen.
  *
- * Displays the game settings, theme preview,
- * and navigation buttons.
- *
  * @returns The complete settings screen markup.
  */
 export function renderSettings(): string {
@@ -191,6 +186,14 @@ export function renderSettings(): string {
             ${renderBoardOptions()}
             ${renderGameModeSettings()}
             ${renderBotDifficultySettings()}
+
+            <button
+              id="back-button"
+              class="settings__back-button"
+              type="button"
+            >
+              ← Back to Home
+            </button>
           </div>
 
           <div class="settings__right">
@@ -204,40 +207,56 @@ export function renderSettings(): string {
             </div>
 
             <div class="settings__actions">
-              <div class="settings__summary">
-                <span>Game theme</span>
+              <div class="settings__summary" aria-live="polite">
+                <span id="summary-theme">Code Vibes</span>
                 <span class="settings__separator" aria-hidden="true"></span>
-                <span>Player</span>
+                <span id="summary-player">Blue Player</span>
                 <span class="settings__separator" aria-hidden="true"></span>
-                <span>Board size</span>
+                <span id="summary-board">16 Cards</span>
               </div>
 
               <button id="play-button" type="button">
-                <span aria-hidden="true">▣</span>
-                Start
+                <svg
+                  class="settings__start-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="2"
+                    y="4"
+                    width="20"
+                    height="16"
+                    rx="1"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M10 8L16 12L10 16V8Z"
+                    fill="currentColor"
+                  />
+                </svg>
+
+                <span>Start</span>
               </button>
             </div>
           </div>
         </div>
-
-        <button id="back-button" class="settings__back-button" type="button">
-          ← Back to Home
-        </button>
       </div>
     </section>
   `;
 }
 
 /**
- * Initializes the interactive card theme preview.
- *
- * Updates the preview image whenever the selected
- * card theme changes.
- *
- * @returns Nothing.
+ * Initializes the interactive card theme preview
+ * and keeps the settings summary up to date.
  */
 export function initializeThemePreview(): void {
   const preview = document.querySelector<HTMLImageElement>('#theme-preview');
+
+  const summaryTheme = document.querySelector<HTMLElement>('#summary-theme');
+  const summaryPlayer = document.querySelector<HTMLElement>('#summary-player');
+  const summaryBoard = document.querySelector<HTMLElement>('#summary-board');
 
   if (!preview) {
     return;
@@ -262,24 +281,67 @@ export function initializeThemePreview(): void {
     },
   };
 
-  const themeInputs = document.querySelectorAll<HTMLInputElement>(
-    'input[name="card-theme"]'
+  const themeLabels: Record<string, string> = {
+    'code-vibes': 'Code Vibes',
+    'da-projects': 'DA Projects',
+    food: 'Food',
+    gaming: 'Gaming',
+  };
+
+  const boardLabels: Record<string, string> = {
+    '4x4': '16 Cards',
+    '4x6': '24 Cards',
+    '6x6': '36 Cards',
+  };
+
+  /**
+   * Updates the preview and summary using the selected settings.
+   */
+  function updateSettingsPreview(): void {
+    const selectedTheme = document.querySelector<HTMLInputElement>(
+      'input[name="card-theme"]:checked'
+    );
+
+    const selectedPlayer = document.querySelector<HTMLInputElement>(
+      'input[name="player-color"]:checked'
+    );
+
+    const selectedBoard = document.querySelector<HTMLInputElement>(
+      'input[name="board-size"]:checked'
+    );
+
+    if (selectedTheme) {
+      const selectedPreview = previews[selectedTheme.value];
+
+      if (selectedPreview) {
+        preview!.src = selectedPreview.src;
+        preview!.alt = selectedPreview.alt;
+      }
+
+      if (summaryTheme) {
+        summaryTheme.textContent =
+          themeLabels[selectedTheme.value] ?? 'Game Theme';
+      }
+    }
+
+    if (selectedPlayer && summaryPlayer) {
+      summaryPlayer.textContent =
+        selectedPlayer.value === 'orange' ? 'Orange Player' : 'Blue Player';
+    }
+
+    if (selectedBoard && summaryBoard) {
+      summaryBoard.textContent =
+        boardLabels[selectedBoard.value] ?? 'Board Size';
+    }
+  }
+
+  const settingsInputs = document.querySelectorAll<HTMLInputElement>(
+    'input[name="card-theme"], input[name="player-color"], input[name="board-size"]'
   );
 
-  themeInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      if (!input.checked) {
-        return;
-      }
-
-      const selectedPreview = previews[input.value];
-
-      if (!selectedPreview) {
-        return;
-      }
-
-      preview.src = selectedPreview.src;
-      preview.alt = selectedPreview.alt;
-    });
+  settingsInputs.forEach((input) => {
+    input.addEventListener('change', updateSettingsPreview);
   });
+
+  updateSettingsPreview();
 }
