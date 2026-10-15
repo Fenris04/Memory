@@ -1,7 +1,43 @@
 import codeVibesPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
 import daProjectsPreview from '../assets/Varianten/Theme-Visual/Property-1-DA-projects__2285-4173.svg';
 import foodPreview from '../assets/Varianten/Theme-Visual/Property-1-foods__2285-4059.svg';
-import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
+import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-gameing__2285-4061.svg';
+
+/**
+ * Creates the card theme selection.
+ *
+ * @returns HTML markup for the available themes.
+ */
+function renderThemeOptions(): string {
+  return `
+    <fieldset class="settings__group settings__group--themes">
+      <legend class="settings__label">
+        <span class="settings__group-icon settings__group-icon--themes" aria-hidden="true">✿</span>
+        Game themes
+      </legend>
+
+      <label class="settings__option">
+        <input type="radio" name="card-theme" value="code-vibes" checked />
+        <span>Code vibes theme</span>
+      </label>
+
+      <label class="settings__option">
+        <input type="radio" name="card-theme" value="gaming" />
+        <span>Gaming theme</span>
+      </label>
+
+      <label class="settings__option">
+        <input type="radio" name="card-theme" value="da-projects" />
+        <span>DA Projects theme</span>
+      </label>
+
+      <label class="settings__option">
+        <input type="radio" name="card-theme" value="food" />
+        <span>Foods theme</span>
+      </label>
+    </fieldset>
+  `;
+}
 
 /**
  * Creates the player color selection.
@@ -11,16 +47,19 @@ import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos_
 function renderColorOptions(): string {
   return `
     <fieldset class="settings__group">
-      <legend class="settings__label">Player Color</legend>
+      <legend class="settings__label">
+        <span class="settings__group-icon settings__group-icon--player" aria-hidden="true">♙</span>
+        Choose player
+      </legend>
 
       <label class="settings__option">
         <input type="radio" name="player-color" value="blue" checked />
-        Blue
+        <span>Blue</span>
       </label>
 
       <label class="settings__option">
         <input type="radio" name="player-color" value="orange" />
-        Orange
+        <span>Orange</span>
       </label>
     </fieldset>
   `;
@@ -34,54 +73,24 @@ function renderColorOptions(): string {
 function renderBoardOptions(): string {
   return `
     <fieldset class="settings__group">
-      <legend class="settings__label">Board Size</legend>
+      <legend class="settings__label">
+        <span class="settings__group-icon settings__group-icon--board" aria-hidden="true">▱</span>
+        Board size
+      </legend>
 
       <label class="settings__option">
         <input type="radio" name="board-size" value="4x4" checked />
-        4 × 4
+        <span>16 cards</span>
       </label>
 
       <label class="settings__option">
         <input type="radio" name="board-size" value="4x6" />
-        4 × 6
+        <span>24 cards</span>
       </label>
 
       <label class="settings__option">
         <input type="radio" name="board-size" value="6x6" />
-        6 × 6
-      </label>
-    </fieldset>
-  `;
-}
-
-/**
- * Creates the card theme selection.
- *
- * @returns HTML markup for the available themes.
- */
-function renderThemeOptions(): string {
-  return `
-    <fieldset class="settings__group">
-      <legend class="settings__label">Card Theme</legend>
-
-      <label class="settings__option">
-        <input type="radio" name="card-theme" value="code-vibes" checked />
-        Code Vibes
-      </label>
-
-      <label class="settings__option">
-        <input type="radio" name="card-theme" value="da-projects" />
-        DA Projects
-      </label>
-
-      <label class="settings__option">
-        <input type="radio" name="card-theme" value="food" />
-        Food
-      </label>
-
-      <label class="settings__option">
-        <input type="radio" name="card-theme" value="gaming" />
-        Gaming
+        <span>36 cards</span>
       </label>
     </fieldset>
   `;
@@ -95,7 +104,10 @@ function renderThemeOptions(): string {
 function renderGameModeSettings(): string {
   return `
     <fieldset class="settings__group">
-      <legend class="settings__label">Game Mode</legend>
+      <legend class="settings__label">
+        <span class="settings__group-icon settings__group-icon--mode" aria-hidden="true">♟</span>
+        Game mode
+      </legend>
 
       <label class="settings__option">
         <input
@@ -132,7 +144,10 @@ function renderBotDifficultySettings(): string {
       hidden
       disabled
     >
-      <legend class="settings__label">Bot Difficulty</legend>
+      <legend class="settings__label">
+        <span class="settings__group-icon settings__group-icon--mode" aria-hidden="true">⚙</span>
+        Bot difficulty
+      </legend>
 
       <label class="settings__option">
         <input type="radio" name="bot-difficulty" value="easy" checked />
@@ -165,11 +180,8 @@ export function renderSettings(): string {
     <section class="settings">
       <div class="settings__container">
         <header class="settings__header">
-          <h1 class="settings__title">Game Settings</h1>
-
-          <p class="settings__description">
-            Customize your game before you start!
-          </p>
+          <h1 class="settings__title">Settings</h1>
+          <div class="settings__title-decoration" aria-hidden="true"></div>
         </header>
 
         <div class="settings__layout">
@@ -181,25 +193,36 @@ export function renderSettings(): string {
             ${renderBotDifficultySettings()}
           </div>
 
-          <div class="settings__preview">
-            <img
-              id="theme-preview"
-              class="settings__preview-image"
-              src="${codeVibesPreview}"
-              alt="Code Vibes card theme preview"
-            />
+          <div class="settings__right">
+            <div class="settings__preview">
+              <img
+                id="theme-preview"
+                class="settings__preview-image"
+                src="${codeVibesPreview}"
+                alt="Code Vibes card theme preview"
+              />
+            </div>
+
+            <div class="settings__actions">
+              <div class="settings__summary">
+                <span>Game theme</span>
+                <span class="settings__separator" aria-hidden="true"></span>
+                <span>Player</span>
+                <span class="settings__separator" aria-hidden="true"></span>
+                <span>Board size</span>
+              </div>
+
+              <button id="play-button" type="button">
+                <span aria-hidden="true">▣</span>
+                Start
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="settings__actions">
-          <button id="back-button" type="button">
-            Back to Home
-          </button>
-
-          <button id="play-button" type="button">
-            Play Now
-          </button>
-        </div>
+        <button id="back-button" class="settings__back-button" type="button">
+          ← Back to Home
+        </button>
       </div>
     </section>
   `;
@@ -210,6 +233,8 @@ export function renderSettings(): string {
  *
  * Updates the preview image whenever the selected
  * card theme changes.
+ *
+ * @returns Nothing.
  */
 export function initializeThemePreview(): void {
   const preview = document.querySelector<HTMLImageElement>('#theme-preview');
