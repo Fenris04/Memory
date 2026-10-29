@@ -109,34 +109,3 @@
   user-select: none;
 }
 }
-
-@media (max-width: 600px) {
-  .home {
-    padding: 32px 20px;
-
-    &__eyebrow {
-      font-size: 1.5rem;
-    }
-
-    &__title {
-      font-size: clamp(3.5rem, 12vw, 5rem);
-    }
-
-    #start-button {
-      width: min(240px, 100%);
-      margin-top: 56px;
-    }
-
-    &__decoration {
-      bottom: -40px;
-      left: -50px;
-      font-size: 12rem;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home #start-button {
-    transition: none;
-  }
-}

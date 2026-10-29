@@ -118,30 +118,3 @@
   }
 }
 
-@media (max-width: 600px) {
-  .coin-toss {
-    gap: 28px;
-
-    &__coin {
-      width: 130px;
-      height: 130px;
-    }
-
-    &__coin-face {
-      font-size: 56px;
-    }
-
-    &__message {
-      font-size: 20px;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .coin-toss {
-    &__coin-inner,
-    &.is-finished .coin-toss__coin {
-      animation: none;
-    }
-  }
-}
