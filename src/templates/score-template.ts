@@ -1,7 +1,10 @@
 
 import { getPlayerName } from '../game/player-utils';
-import type { GameState } from '../game/game-state';
+import type { GameState, PlayerNumber } from '../game/game-state';
 import type { GameMode, PlayerColor } from '../settings/game-settings';
+
+const PLAYER_ONE: PlayerNumber = 1;
+const PLAYER_TWO: PlayerNumber = 2;
 
 /**
  * Returns the opposite player color.
@@ -11,6 +14,40 @@ import type { GameMode, PlayerColor } from '../settings/game-settings';
  */
 function getOppositeColor(color: PlayerColor): PlayerColor {
   return color === 'blue' ? 'orange' : 'blue';
+}
+
+/**
+ * Renders the head of the player symbol.
+ *
+ * @returns The SVG circle markup.
+ */
+function renderPlayerIconHead(): string {
+  return `
+    <circle
+      cx="12"
+      cy="5"
+      r="3"
+      stroke="currentColor"
+      stroke-width="2"
+    />
+  `;
+}
+
+/**
+ * Renders the body of the player symbol.
+ *
+ * @returns The SVG path markup.
+ */
+function renderPlayerIconBody(): string {
+  return `
+    <path
+      d="M9 9H15L17 15L15 17L18 21H6L9 17L7 15L9 9Z"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  `;
 }
 
 /**
@@ -26,20 +63,8 @@ function renderPlayerIcon(): string {
       fill="none"
       aria-hidden="true"
     >
-      <circle
-        cx="12"
-        cy="5"
-        r="3"
-        stroke="currentColor"
-        stroke-width="2"
-      />
-      <path
-        d="M9 9H15L17 15L15 17L18 21H6L9 17L7 15L9 9Z"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
+      ${renderPlayerIconHead()}
+      ${renderPlayerIconBody()}
     </svg>
   `;
 }
@@ -68,11 +93,24 @@ function renderPlayerScore(
       aria-label="${name}: ${score} points"
     >
       ${renderPlayerIcon()}
-
       <span class="scoreboard__color-name">${COLOR_NAME}</span>
-
       <span class="scoreboard__score">${score}</span>
     </div>
+  `;
+}
+
+/**
+ * Renders the animated dots for the bot thinking indicator.
+ *
+ * @returns The animated dots HTML.
+ */
+function renderThinkingDots(): string {
+  return `
+    <span class="scoreboard__thinking-dots" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
   `;
 }
 
@@ -87,19 +125,52 @@ function renderBotThinking(
   state: GameState,
   gameMode: GameMode
 ): string {
-  if (gameMode !== 'player-vs-bot' || state.currentPlayer !== 2) {
+  if (gameMode !== 'player-vs-bot' || state.currentPlayer !== PLAYER_TWO) {
     return '';
   }
 
   return `
     <span class="scoreboard__thinking" role="status">
       <span>Bot is thinking</span>
+      ${renderThinkingDots()}
+    </span>
+  `;
+}
 
-      <span class="scoreboard__thinking-dots" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
+/**
+ * Returns the assigned color of the active player.
+ *
+ * @param state - The current game state.
+ * @param playerColor - The selected color of Player 1.
+ * @returns The active player's color.
+ */
+function getActivePlayerColor(
+  state: GameState,
+  playerColor: PlayerColor
+): PlayerColor {
+  return state.currentPlayer === PLAYER_ONE
+    ? playerColor
+    : getOppositeColor(playerColor);
+}
+
+/**
+ * Renders the active player's symbol.
+ *
+ * @param name - The active player's display name.
+ * @param color - The active player's color.
+ * @returns The current player icon HTML.
+ */
+function renderActivePlayerIcon(
+  name: string,
+  color: PlayerColor
+): string {
+  return `
+    <span
+      class="scoreboard__current-player scoreboard__current-player--${color}"
+      aria-label="${name}"
+      title="${name}"
+    >
+      ${renderPlayerIcon()}
     </span>
   `;
 }
@@ -117,30 +188,67 @@ function renderCurrentTurn(
   gameMode: GameMode,
   playerColor: PlayerColor
 ): string {
-  const ACTIVE_NAME: string = getPlayerName(
-    state.currentPlayer,
-    gameMode
-  );
-
-  const ACTIVE_COLOR: PlayerColor = state.currentPlayer === 1
-    ? playerColor
-    : getOppositeColor(playerColor);
+  const ACTIVE_NAME: string = getPlayerName(state.currentPlayer, gameMode);
+  const ACTIVE_COLOR: PlayerColor = getActivePlayerColor(state, playerColor);
 
   return `
     <div class="scoreboard__turn">
       <span class="scoreboard__turn-label">Current player:</span>
-
-      <span
-        class="scoreboard__current-player scoreboard__current-player--${ACTIVE_COLOR}"
-        aria-label="${ACTIVE_NAME}"
-        title="${ACTIVE_NAME}"
-      >
-        ${renderPlayerIcon()}
-      </span>
-
+      ${renderActivePlayerIcon(ACTIVE_NAME, ACTIVE_COLOR)}
       ${renderBotThinking(state, gameMode)}
     </div>
   `;
+}
+
+/**
+ * Renders the score display for a specific player.
+ *
+ * @param player - The player number.
+ * @param score - The player's current score.
+ * @param color - The player's assigned color.
+ * @param state - The current game state.
+ * @param gameMode - The selected game mode.
+ * @returns The player's score HTML.
+ */
+function renderScoreForPlayer(
+  player: PlayerNumber,
+  score: number,
+  color: PlayerColor,
+  state: GameState,
+  gameMode: GameMode
+): string {
+  return renderPlayerScore(
+    getPlayerName(player, gameMode),
+    score,
+    color,
+    state.currentPlayer === player
+  );
+}
+
+/**
+ * Renders both player scores in orange-blue order.
+ *
+ * @param state - The current game state.
+ * @param playerColor - The selected color of Player 1.
+ * @param gameMode - The selected game mode.
+ * @returns The ordered score markup.
+ */
+function renderOrderedScores(
+  state: GameState,
+  playerColor: PlayerColor,
+  gameMode: GameMode
+): string {
+  const FIRST_SCORE: string = renderScoreForPlayer(
+    PLAYER_ONE, state.playerOneScore, playerColor, state, gameMode
+  );
+  const SECOND_SCORE: string = renderScoreForPlayer(
+    PLAYER_TWO, state.playerTwoScore, getOppositeColor(playerColor),
+    state, gameMode
+  );
+
+  return playerColor === 'orange'
+    ? FIRST_SCORE + SECOND_SCORE
+    : SECOND_SCORE + FIRST_SCORE;
 }
 
 /**
@@ -156,37 +264,11 @@ export function renderScoreboard(
   playerColor: PlayerColor,
   gameMode: GameMode
 ): string {
-  const SECOND_COLOR: PlayerColor = getOppositeColor(playerColor);
-
-  const FIRST_PLAYER: string = renderPlayerScore(
-    getPlayerName(1, gameMode),
-    state.playerOneScore,
-    playerColor,
-    state.currentPlayer === 1
-  );
-
-  const SECOND_PLAYER: string = renderPlayerScore(
-    getPlayerName(2, gameMode),
-    state.playerTwoScore,
-    SECOND_COLOR,
-    state.currentPlayer === 2
-  );
-
-  const ORANGE_SCORE: string = playerColor === 'orange'
-    ? FIRST_PLAYER
-    : SECOND_PLAYER;
-
-  const BLUE_SCORE: string = playerColor === 'blue'
-    ? FIRST_PLAYER
-    : SECOND_PLAYER;
-
   return `
     <div class="scoreboard" aria-live="polite">
       <div class="scoreboard__scores">
-        ${ORANGE_SCORE}
-        ${BLUE_SCORE}
+        ${renderOrderedScores(state, playerColor, gameMode)}
       </div>
-
       ${renderCurrentTurn(state, gameMode, playerColor)}
     </div>
   `;

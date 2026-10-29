@@ -2,33 +2,20 @@
 import './styles/style.scss';
 
 import { renderHome } from './templates/home-template';
-import {
-  renderSettings,
-  initializeThemePreview
-} from './templates/settings-template';
+import { renderSettings, initializeThemePreview } from './templates/settings-template';
 import { renderGame } from './templates/game-template';
 import { renderScoreboard } from './templates/score-template';
 import { renderGameOver } from './templates/game-over-template';
-import {
-  renderCoinToss,
-  renderCoinResult
-} from './templates/coin-toss-template';
 
 import { setupSettingsInteractions } from './settings/settings-interactions';
-
-import {
-  createDefaultSettings,
-  getGameSettings
-} from './settings/settings-utils';
+import { createDefaultSettings, getGameSettings } from './settings/settings-utils';
 
 import { getThemeImages } from './game/card-assets';
 import { createCards, shuffleCards } from './game/card-utils';
 import { getPairCount } from './game/board-utils';
-
-import {
-  resetCardInteractions,
-  setupCardInteractions
-} from './game/card-interactions';
+import { resetCardInteractions, setupCardInteractions } from './game/card-interactions';
+import { resetCoinToss, showCoinToss } from './game/coin-toss-controller';
+import { setupExitButton } from './game/exit-dialog-controller';
 
 import {
   awardPoint,
@@ -40,54 +27,24 @@ import {
   tossCoin
 } from './game/game-state';
 
-import type { GameSettings } from './settings/game-settings';
-import type { CardImages, MemoryCard } from './game/card-types';
-import type {
-  GameState,
-  PlayerNumber
-} from './game/game-state';
-import type { CardInteractionEvents } from './game/card-interactions';
-
 import {
   cancelBotTurn,
-  resumeBotTurn,
   scheduleBotTurn,
   setBotDifficulty
 } from './game/memory-bot';
 
-import {
-  rememberCard,
-  resetBotMemory
-} from './game/bot-memory';
+import { rememberCard, resetBotMemory } from './game/bot-memory';
 
-const CONTENT: HTMLElement | null =
-  document.getElementById('main-container');
+import type { GameSettings } from './settings/game-settings';
+import type { CardImages, MemoryCard } from './game/card-types';
+import type { GameState, PlayerNumber } from './game/game-state';
+import type { CardInteractionEvents } from './game/card-interactions';
 
-const COIN_TOSS_DURATION: number = 1800;
-const COIN_RESULT_DURATION: number = 1200;
+const CONTENT: HTMLElement | null = document.getElementById('main-container');
+const BOT_PLAYER: PlayerNumber = 2;
 
 let gameSettings: GameSettings = createDefaultSettings();
 let gameState: GameState | null = null;
-let coinTossTimer: number | null = null;
-let coinResultTimer: number | null = null;
-
-/**
- * Cancels all pending coin toss timers.
- *
- * @returns Nothing.
- */
-function resetCoinToss(): void {
-  if (coinTossTimer !== null) {
-    window.clearTimeout(coinTossTimer);
-  }
-
-  if (coinResultTimer !== null) {
-    window.clearTimeout(coinResultTimer);
-  }
-
-  coinTossTimer = null;
-  coinResultTimer = null;
-}
 
 /**
  * Displays the home screen.
@@ -100,11 +57,7 @@ function showHome(): void {
   }
 
   CONTENT.innerHTML = renderHome();
-
-  const START_BUTTON: HTMLElement | null =
-    document.getElementById('start-button');
-
-  START_BUTTON?.addEventListener('click', showSettings);
+  document.getElementById('start-button')?.addEventListener('click', showSettings);
 }
 
 /**
@@ -118,7 +71,6 @@ function showSettings(): void {
   }
 
   CONTENT.innerHTML = renderSettings();
-
   setupBackButton();
   setupPlayButton();
   setupSettingsInteractions();
@@ -131,9 +83,7 @@ function showSettings(): void {
  * @returns Nothing.
  */
 function setupBackButton(): void {
-  const BACK_BUTTON: HTMLElement | null =
-    document.getElementById('back-button');
-
+  const BACK_BUTTON: HTMLElement | null = document.getElementById('back-button');
   BACK_BUTTON?.addEventListener('click', showHome);
 }
 
@@ -143,9 +93,7 @@ function setupBackButton(): void {
  * @returns Nothing.
  */
 function setupPlayButton(): void {
-  const PLAY_BUTTON: HTMLElement | null =
-    document.getElementById('play-button');
-
+  const PLAY_BUTTON: HTMLElement | null = document.getElementById('play-button');
   PLAY_BUTTON?.addEventListener('click', startGame);
 }
 
@@ -170,60 +118,18 @@ function createGameCards(): MemoryCard[] {
  */
 function createNewRound(startingPlayer: PlayerNumber): void {
   const PAIR_COUNT: number = getPairCount(gameSettings.boardSize);
-
   resetBotMemory();
   gameState = createGameState(PAIR_COUNT, startingPlayer);
 }
 
 /**
- * Displays the result of the coin toss.
+ * Starts the coin toss for the current game.
  *
- * @param startingPlayer - The player selected by the coin toss.
+ * @param startingPlayer - The selected starting player.
  * @returns Nothing.
  */
-function showCoinResult(startingPlayer: PlayerNumber): void {
-  const COIN_SCREEN: HTMLElement | null =
-    document.querySelector('.coin-toss');
-
-  const MESSAGE: HTMLElement | null =
-    document.querySelector('.coin-toss__message');
-
-  COIN_SCREEN?.classList.add('is-finished');
-  COIN_SCREEN?.setAttribute('data-winner', String(startingPlayer));
-
-  if (MESSAGE) {
-    MESSAGE.innerHTML = renderCoinResult(
-      startingPlayer,
-      gameSettings.gameMode
-    );
-  }
-
-  coinTossTimer = null;
-}
-
-/**
- * Starts the coin toss animation.
- *
- * @param startingPlayer - The player selected by the coin toss.
- * @returns Nothing.
- */
-function showCoinToss(startingPlayer: PlayerNumber): void {
-  if (!CONTENT) {
-    return;
-  }
-
-  resetCoinToss();
-  CONTENT.innerHTML = renderCoinToss();
-
-  coinTossTimer = window.setTimeout(
-    (): void => showCoinResult(startingPlayer),
-    COIN_TOSS_DURATION
-  );
-
-  coinResultTimer = window.setTimeout(
-    showGame,
-    COIN_TOSS_DURATION + COIN_RESULT_DURATION
-  );
+function startCoinToss(startingPlayer: PlayerNumber): void {
+  showCoinToss(CONTENT, startingPlayer, gameSettings.gameMode, showGame);
 }
 
 /**
@@ -236,9 +142,8 @@ function startGame(): void {
   setBotDifficulty(gameSettings.botDifficulty);
 
   const STARTING_PLAYER: PlayerNumber = tossCoin();
-
   createNewRound(STARTING_PLAYER);
-  showCoinToss(STARTING_PLAYER);
+  startCoinToss(STARTING_PLAYER);
 }
 
 /**
@@ -252,14 +157,13 @@ function startRematch(): void {
   }
 
   const IS_DRAW: boolean = getWinner(gameState) === null;
-  const STARTING_PLAYER: PlayerNumber =
-    getNextStartingPlayer(gameState);
+  const STARTING_PLAYER: PlayerNumber = getNextStartingPlayer(gameState);
 
   cancelBotTurn();
   createNewRound(STARTING_PLAYER);
 
   if (IS_DRAW) {
-    showCoinToss(STARTING_PLAYER);
+    startCoinToss(STARTING_PLAYER);
     return;
   }
 
@@ -276,17 +180,13 @@ function updateScoreboard(): void {
     return;
   }
 
-  const SCOREBOARD: HTMLElement | null =
-    document.querySelector('.scoreboard');
-
+  const SCOREBOARD: HTMLElement | null = document.querySelector('.scoreboard');
   if (!SCOREBOARD) {
     return;
   }
 
   SCOREBOARD.outerHTML = renderScoreboard(
-    gameState,
-    gameSettings.playerColor,
-    gameSettings.gameMode
+    gameState, gameSettings.playerColor, gameSettings.gameMode
   );
 }
 
@@ -302,12 +202,8 @@ function showGameOver(): void {
 
   cancelBotTurn();
   resetCardInteractions();
-
   CONTENT.innerHTML = renderGameOver(
-    gameState,
-    gameSettings.playerColor,
-    gameSettings.gameMode,
-    gameSettings.theme
+    gameState, gameSettings.playerColor, gameSettings.gameMode, gameSettings.theme
   );
 
   setupHomeButton();
@@ -320,9 +216,7 @@ function showGameOver(): void {
  * @returns Nothing.
  */
 function setupHomeButton(): void {
-  const HOME_BUTTON: HTMLElement | null =
-    document.getElementById('home-button');
-
+  const HOME_BUTTON: HTMLElement | null = document.getElementById('home-button');
   HOME_BUTTON?.addEventListener('click', exitGame);
 }
 
@@ -332,10 +226,19 @@ function setupHomeButton(): void {
  * @returns Nothing.
  */
 function setupRematchButton(): void {
-  const REMATCH_BUTTON: HTMLElement | null =
-    document.getElementById('rematch-button');
-
+  const REMATCH_BUTTON: HTMLElement | null = document.getElementById('rematch-button');
   REMATCH_BUTTON?.addEventListener('click', startRematch);
+}
+
+/**
+ * Handles the next bot move after a successful match.
+ *
+ * @returns Nothing.
+ */
+function scheduleBotAfterMatch(): void {
+  if (isBotTurn()) {
+    scheduleBotTurn(true);
+  }
 }
 
 /**
@@ -356,9 +259,7 @@ function handleGameMatch(): void {
     return;
   }
 
-  if (isBotTurn()) {
-    scheduleBotTurn(true);
-  }
+  scheduleBotAfterMatch();
 }
 
 /**
@@ -397,6 +298,17 @@ function setupGameEvents(cards: MemoryCard[]): void {
 }
 
 /**
+ * Starts the bot when it is the active player.
+ *
+ * @returns Nothing.
+ */
+function startBotIfNeeded(): void {
+  if (isBotTurn()) {
+    scheduleBotTurn();
+  }
+}
+
+/**
  * Displays the game board.
  *
  * @returns Nothing.
@@ -407,19 +319,23 @@ function showGame(): void {
   }
 
   const CARDS: MemoryCard[] = createGameCards();
-
-  CONTENT.innerHTML = renderGame(
-    CARDS,
-    gameSettings,
-    gameState
-  );
+  CONTENT.innerHTML = renderGame(CARDS, gameSettings, gameState);
 
   setupGameEvents(CARDS);
-  setupExitButton();
+  setupExitButton(isBotTurn, exitGameToSettings);
+  startBotIfNeeded();
+}
 
-  if (isBotTurn()) {
-    scheduleBotTurn();
-  }
+/**
+ * Clears the current game and pending interactions.
+ *
+ * @returns Nothing.
+ */
+function clearGame(): void {
+  cancelBotTurn();
+  resetCoinToss();
+  resetCardInteractions();
+  gameState = null;
 }
 
 /**
@@ -428,11 +344,7 @@ function showGame(): void {
  * @returns Nothing.
  */
 function exitGame(): void {
-  cancelBotTurn();
-  resetCoinToss();
-  resetCardInteractions();
-
-  gameState = null;
+  clearGame();
   showHome();
 }
 
@@ -442,64 +354,8 @@ function exitGame(): void {
  * @returns Nothing.
  */
 function exitGameToSettings(): void {
-  cancelBotTurn();
-  resetCoinToss();
-  resetCardInteractions();
-
-  gameState = null;
+  clearGame();
   showSettings();
-}
-
-/**
- * Registers the exit confirmation dialog.
- *
- * @returns Nothing.
- */
-function setupExitButton(): void {
-  const EXIT_BUTTON: HTMLButtonElement | null =
-    document.querySelector<HTMLButtonElement>('#exit-button');
-
-  const EXIT_DIALOG: HTMLDialogElement | null =
-    document.querySelector<HTMLDialogElement>('#exit-dialog');
-
-  const CANCEL_BUTTON: HTMLButtonElement | null =
-    document.querySelector<HTMLButtonElement>('#cancel-exit-button');
-
-  const CONFIRM_BUTTON: HTMLButtonElement | null =
-    document.querySelector<HTMLButtonElement>('#confirm-exit-button');
-
-  if (
-    !EXIT_BUTTON ||
-    !EXIT_DIALOG ||
-    !CANCEL_BUTTON ||
-    !CONFIRM_BUTTON
-  ) {
-    console.error('Exit dialog elements are missing.');
-    return;
-  }
-
-  let isLeavingGame: boolean = false;
-
-  EXIT_BUTTON.addEventListener('click', (): void => {
-    cancelBotTurn();
-    EXIT_DIALOG.showModal();
-  });
-
-  CANCEL_BUTTON.addEventListener('click', (): void => {
-    EXIT_DIALOG.close();
-  });
-
-  EXIT_DIALOG.addEventListener('close', (): void => {
-    if (!isLeavingGame && isBotTurn()) {
-      resumeBotTurn();
-    }
-  });
-
-  CONFIRM_BUTTON.addEventListener('click', (): void => {
-    isLeavingGame = true;
-    EXIT_DIALOG.close();
-    exitGameToSettings();
-  });
 }
 
 /**
@@ -509,7 +365,7 @@ function setupExitButton(): void {
  */
 function isBotTurn(): boolean {
   return gameSettings.gameMode === 'player-vs-bot' &&
-    gameState?.currentPlayer === 2;
+    gameState?.currentPlayer === BOT_PLAYER;
 }
 
 /**

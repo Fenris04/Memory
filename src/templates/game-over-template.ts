@@ -13,6 +13,12 @@ import type {
   PlayerColor
 } from '../settings/game-settings';
 
+type GameOverTheme = GameSettings['theme'];
+type ResultColor = PlayerColor | 'draw';
+
+const PLAYER_ONE: PlayerNumber = 1;
+const PLAYER_TWO: PlayerNumber = 2;
+
 const GAME_OVER_ASSETS: Record<string, string> = import.meta.glob(
   '../assets/Varianten/**/*.{svg,png}',
   {
@@ -21,6 +27,13 @@ const GAME_OVER_ASSETS: Record<string, string> = import.meta.glob(
     import: 'default'
   }
 );
+
+const DRAW_ICONS: Record<GameOverTheme, string> = {
+  'code-vibes': 'Scale_Icon.svg',
+  gaming: 'Scale_Icon2.png',
+  'da-projects': 'Scale_Icon3.png',
+  food: 'scale_icon4.png'
+};
 
 /**
  * Finds a Game Over image by its file name.
@@ -35,9 +48,7 @@ function getGameOverAsset(fileName: string): string {
         path.split('/').pop()?.toLowerCase() === fileName.toLowerCase()
     );
 
-  return MATCHING_PATH
-    ? GAME_OVER_ASSETS[MATCHING_PATH]
-    : '';
+  return MATCHING_PATH ? GAME_OVER_ASSETS[MATCHING_PATH] : '';
 }
 
 /**
@@ -61,9 +72,46 @@ function getWinnerColor(
   winner: PlayerNumber,
   playerColor: PlayerColor
 ): PlayerColor {
-  return winner === 1
+  return winner === PLAYER_ONE
     ? playerColor
     : getOppositeColor(playerColor);
+}
+
+/**
+ * Returns the result color for a winner or draw.
+ *
+ * @param winner - The winning player or null.
+ * @param playerColor - The selected color of Player 1.
+ * @returns The result color.
+ */
+function getResultColor(
+  winner: PlayerNumber | null,
+  playerColor: PlayerColor
+): ResultColor {
+  return winner === null
+    ? 'draw'
+    : getWinnerColor(winner, playerColor);
+}
+
+/**
+ * Creates the score markup for one player.
+ *
+ * @param player - The player number.
+ * @param score - The player's final score.
+ * @param gameMode - The selected game mode.
+ * @returns The player's score markup.
+ */
+function renderPlayerScore(
+  player: PlayerNumber,
+  score: number,
+  gameMode: GameMode
+): string {
+  return `
+    <span class="game-over__score">
+      <span>${getPlayerName(player, gameMode)}</span>
+      <strong>${score}</strong>
+    </span>
+  `;
 }
 
 /**
@@ -77,21 +125,42 @@ function renderFinalScores(
   state: GameState,
   gameMode: GameMode
 ): string {
-  const FIRST_NAME: string = getPlayerName(1, gameMode);
-  const SECOND_NAME: string = getPlayerName(2, gameMode);
-
   return `
     <div class="game-over__scores">
-      <span class="game-over__score">
-        <span>${FIRST_NAME}</span>
-        <strong>${state.playerOneScore}</strong>
-      </span>
-
-      <span class="game-over__score">
-        <span>${SECOND_NAME}</span>
-        <strong>${state.playerTwoScore}</strong>
-      </span>
+      ${renderPlayerScore(PLAYER_ONE, state.playerOneScore, gameMode)}
+      ${renderPlayerScore(PLAYER_TWO, state.playerTwoScore, gameMode)}
     </div>
+  `;
+}
+
+/**
+ * Creates the heading for a draw.
+ *
+ * @returns The draw heading markup.
+ */
+function renderDrawHeading(): string {
+  return `
+    <p class="game-over__eyebrow">It's a</p>
+    <h2 class="game-over__result">DRAW</h2>
+  `;
+}
+
+/**
+ * Creates the heading for the winning player.
+ *
+ * @param winner - The winning player.
+ * @param gameMode - The selected game mode.
+ * @returns The winner heading markup.
+ */
+function renderWinnerHeading(
+  winner: PlayerNumber,
+  gameMode: GameMode
+): string {
+  return `
+    <p class="game-over__eyebrow">The winner is</p>
+    <h2 class="game-over__result">
+      ${getPlayerName(winner, gameMode)}
+    </h2>
   `;
 }
 
@@ -106,19 +175,9 @@ function renderResultHeading(
   winner: PlayerNumber | null,
   gameMode: GameMode
 ): string {
-  if (winner === null) {
-    return `
-      <p class="game-over__eyebrow">It's a</p>
-      <h2 class="game-over__result">DRAW</h2>
-    `;
-  }
-
-  return `
-    <p class="game-over__eyebrow">The winner is</p>
-    <h2 class="game-over__result">
-      ${getPlayerName(winner, gameMode)}
-    </h2>
-  `;
+  return winner === null
+    ? renderDrawHeading()
+    : renderWinnerHeading(winner, gameMode);
 }
 
 /**
@@ -127,15 +186,72 @@ function renderResultHeading(
  * @param theme - The selected card theme.
  * @returns The illustration image URL.
  */
-function getDrawIcon(theme: GameSettings['theme']): string {
-  const DRAW_ICONS: Record<GameSettings['theme'], string> = {
-    'code-vibes': 'Scale_Icon.svg',
-    gaming: 'Scale_Icon2.png',
-    'da-projects': 'Scale_Icon3.png',
-    food: 'scale_icon4.png'
-  };
-
+function getDrawIcon(theme: GameOverTheme): string {
   return getGameOverAsset(DRAW_ICONS[theme]);
+}
+
+/**
+ * Creates an illustration with the specified CSS class.
+ *
+ * @param className - The illustration modifier class.
+ * @param imageUrl - The illustration image URL.
+ * @returns The illustration markup.
+ */
+function renderIllustration(
+  className: string,
+  imageUrl: string
+): string {
+  return `
+    <div class="game-over__icon ${className}">
+      <img
+        src="${imageUrl}"
+        alt=""
+        aria-hidden="true"
+      />
+    </div>
+  `;
+}
+
+/**
+ * Creates the draw illustration.
+ *
+ * @param theme - The selected card theme.
+ * @returns The draw illustration markup.
+ */
+function renderDrawIcon(theme: GameOverTheme): string {
+  return renderIllustration(
+    'game-over__icon--draw',
+    getDrawIcon(theme)
+  );
+}
+
+/**
+ * Creates the trophy illustration for the gaming theme.
+ *
+ * @returns The trophy illustration markup.
+ */
+function renderTrophyIcon(): string {
+  return renderIllustration(
+    'game-over__icon--trophy',
+    getGameOverAsset('pokal.svg')
+  );
+}
+
+/**
+ * Creates the winner's pawn illustration.
+ *
+ * @param resultColor - The winner's player color.
+ * @returns The pawn illustration markup.
+ */
+function renderPawnIcon(resultColor: PlayerColor): string {
+  const PAWN_ICON: string = resultColor === 'blue'
+    ? 'blue-pawn.svg'
+    : 'orange-pawn.svg';
+
+  return renderIllustration(
+    'game-over__icon--player',
+    getGameOverAsset(PAWN_ICON)
+  );
 }
 
 /**
@@ -148,45 +264,40 @@ function getDrawIcon(theme: GameSettings['theme']): string {
  */
 function renderResultIcon(
   winner: PlayerNumber | null,
-  theme: GameSettings['theme'],
-  resultColor: PlayerColor | 'draw'
+  theme: GameOverTheme,
+  resultColor: ResultColor
 ): string {
   if (winner === null) {
-    return `
-      <div class="game-over__icon game-over__icon--draw">
-        <img
-          src="${getDrawIcon(theme)}"
-          alt=""
-          aria-hidden="true"
-        />
-      </div>
-    `;
+    return renderDrawIcon(theme);
   }
 
-  if (theme === 'gaming') {
-    return `
-      <div class="game-over__icon game-over__icon--trophy">
-        <img
-          src="${getGameOverAsset('pokal.svg')}"
-          alt=""
-          aria-hidden="true"
-        />
-      </div>
-    `;
-  }
+  return theme === 'gaming'
+    ? renderTrophyIcon()
+    : renderPawnIcon(resultColor as PlayerColor);
+}
 
-  const PAWN_ICON: string = resultColor === 'blue'
-    ? 'blue-pawn.svg'
-    : 'orange-pawn.svg';
+/**
+ * Creates the confetti illustration for the winner screen.
+ *
+ * @param winner - The winning player or null.
+ * @param theme - The selected card theme.
+ * @returns The confetti markup or an empty string.
+ */
+function renderConfetti(
+  winner: PlayerNumber | null,
+  theme: GameOverTheme
+): string {
+  if (theme !== 'code-vibes' || winner === null) {
+    return '';
+  }
 
   return `
-    <div class="game-over__icon game-over__icon--player">
-      <img
-        src="${getGameOverAsset(PAWN_ICON)}"
-        alt=""
-        aria-hidden="true"
-      />
-    </div>
+    <img
+      class="game-over__confetti"
+      src="${getGameOverAsset('Confetti.svg')}"
+      alt=""
+      aria-hidden="true"
+    />
   `;
 }
 
@@ -201,10 +312,56 @@ function renderResultActions(): string {
       <button id="home-button" type="button">
         Home
       </button>
-
       <button id="rematch-button" type="button">
         Rematch
       </button>
+    </div>
+  `;
+}
+
+/**
+ * Creates the introductory Game Over display.
+ *
+ * @param state - The completed game state.
+ * @param gameMode - The selected game mode.
+ * @returns The intro markup.
+ */
+function renderGameOverIntro(
+  state: GameState,
+  gameMode: GameMode
+): string {
+  return `
+    <div class="game-over__intro">
+      <h1 class="game-over__title">Game Over</h1>
+      <p class="game-over__score-label">
+        Final score
+      </p>
+      ${renderFinalScores(state, gameMode)}
+    </div>
+  `;
+}
+
+/**
+ * Creates the final result display.
+ *
+ * @param winner - The winning player or null.
+ * @param gameMode - The selected game mode.
+ * @param theme - The selected card theme.
+ * @param resultColor - The result color.
+ * @returns The outcome markup.
+ */
+function renderGameOverOutcome(
+  winner: PlayerNumber | null,
+  gameMode: GameMode,
+  theme: GameOverTheme,
+  resultColor: ResultColor
+): string {
+  return `
+    <div class="game-over__outcome">
+      ${renderConfetti(winner, theme)}
+      ${renderResultHeading(winner, gameMode)}
+      ${renderResultIcon(winner, theme, resultColor)}
+      ${renderResultActions()}
     </div>
   `;
 }
@@ -222,47 +379,15 @@ export function renderGameOver(
   state: GameState,
   playerColor: PlayerColor,
   gameMode: GameMode,
-  theme: GameSettings['theme']
+  theme: GameOverTheme
 ): string {
   const WINNER: PlayerNumber | null = getWinner(state);
-
-  const RESULT_COLOR: PlayerColor | 'draw' = WINNER === null
-    ? 'draw'
-    : getWinnerColor(WINNER, playerColor);
-
-  const CONFETTI: string = theme === 'code-vibes' && WINNER !== null
-    ? `
-      <img
-        class="game-over__confetti"
-        src="${getGameOverAsset('Confetti.svg')}"
-        alt=""
-        aria-hidden="true"
-      />
-    `
-    : '';
+  const RESULT_COLOR: ResultColor = getResultColor(WINNER, playerColor);
 
   return `
-    <main
-      class="game-over"
-      data-theme="${theme}"
-      data-result="${RESULT_COLOR}"
-    >
-      <div class="game-over__intro">
-        <h1 class="game-over__title">Game Over</h1>
-
-        <p class="game-over__score-label">
-          Final score
-        </p>
-
-        ${renderFinalScores(state, gameMode)}
-      </div>
-
-      <div class="game-over__outcome">
-        ${CONFETTI}
-        ${renderResultHeading(WINNER, gameMode)}
-        ${renderResultIcon(WINNER, theme, RESULT_COLOR)}
-        ${renderResultActions()}
-      </div>
+    <main class="game-over" data-theme="${theme}" data-result="${RESULT_COLOR}">
+      ${renderGameOverIntro(state, gameMode)}
+      ${renderGameOverOutcome(WINNER, gameMode, theme, RESULT_COLOR)}
     </main>
   `;
 }
