@@ -4,6 +4,10 @@ import daProjectsPreview from '../assets/Varianten/Theme-Visual/Property-1-DA-pr
 import foodPreview from '../assets/Varianten/Theme-Visual/Property-1-foods__2285-4059.svg';
 import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-gameing__2285-4061.svg';
 
+import paletteIcon from '../assets/Varianten/palette.svg';
+import chessPawnIcon from '../assets/Varianten/chess_pawn.svg';
+import cardIcon from '../assets/Varianten/card.svg';
+
 /**
  * Creates the card theme selection.
  *
@@ -13,23 +17,12 @@ function renderThemeOptions(): string {
   return `
     <fieldset class="settings__group">
       <legend class="settings__label">
-        <svg
+        <img
           class="settings__group-icon settings__group-icon--themes"
-          viewBox="0 0 32 32"
-          fill="none"
+          src="${paletteIcon}"
+          alt=""
           aria-hidden="true"
-        >
-          <path
-            d="M16 3C8.8 3 3 8.7 3 16s5.8 13 13 13h2a4 4 0 0 0 3-6.6 2.5 2.5 0 0 1 1.9-4.1H25c2.2 0 4-1.8 4-4C29 8.1 23.2 3 16 3Z"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linejoin="round"
-          />
-          <circle cx="10" cy="13" r="2" fill="currentColor" />
-          <circle cx="15" cy="8" r="2" fill="currentColor" />
-          <circle cx="22" cy="11" r="2" fill="currentColor" />
-          <circle cx="9" cy="20" r="2" fill="currentColor" />
-        </svg>
+        />
         Game themes
       </legend>
 
@@ -65,32 +58,12 @@ function renderColorOptions(): string {
   return `
     <fieldset class="settings__group">
       <legend class="settings__label">
-        <svg
+        <img
           class="settings__group-icon settings__group-icon--player"
-          viewBox="0 0 32 32"
-          fill="none"
+          src="${chessPawnIcon}"
+          alt=""
           aria-hidden="true"
-        >
-          <circle
-            cx="16"
-            cy="7"
-            r="4"
-            stroke="currentColor"
-            stroke-width="2.5"
-          />
-          <path
-            d="M12 12H20L21 17L25 21V25H7V21L11 17L12 12Z"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linejoin="round"
-          />
-          <path
-            d="M5 29H27"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-          />
-        </svg>
+        />
         Choose player
       </legend>
 
@@ -116,29 +89,12 @@ function renderBoardOptions(): string {
   return `
     <fieldset class="settings__group">
       <legend class="settings__label">
-        <svg
+        <img
           class="settings__group-icon settings__group-icon--board"
-          viewBox="0 0 32 32"
-          fill="none"
+          src="${cardIcon}"
+          alt=""
           aria-hidden="true"
-        >
-          <rect
-            x="10"
-            y="4"
-            width="17"
-            height="23"
-            rx="2"
-            transform="rotate(-15 10 4)"
-            stroke="currentColor"
-            stroke-width="2.5"
-          />
-          <path
-            d="M7 10L4 11L8 27L11 26"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linejoin="round"
-          />
-        </svg>
+        />
         Board size
       </legend>
 
