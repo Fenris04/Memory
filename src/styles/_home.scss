@@ -1,3 +1,4 @@
+
 @use 'variables' as *;
 
 .home {
@@ -28,6 +29,7 @@
   &__eyebrow {
     margin: 0 0 12px;
 
+    font-family: 'Almarai', sans-serif;
     font-size: clamp(1.5rem, 3vw, 3rem);
     font-weight: 400;
     line-height: 1.3;
@@ -37,75 +39,75 @@
     margin: 0;
 
     color: #ffffff;
-    font-family: Georgia, 'Times New Roman', serif;
+    font-family: 'Red Rose', serif;
     font-size: clamp(4rem, 9vw, 9rem);
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -0.04em;
   }
 
-#start-button {
-  position: relative;
-  display: block;
-
-  width: min(290px, 100%);
-  margin: 80px auto 0;
-  padding: 0;
-
-  border: none;
-  background: transparent;
-  cursor: pointer;
-
-  transform-origin: center;
-  transition: transform 0.5s ease;
-
-  .home__button-image {
+  #start-button {
+    position: relative;
     display: block;
-    width: 100%;
-    height: auto;
 
-    transition: opacity 0.5s ease;
-  }
+    width: min(290px, 100%);
+    margin: 80px auto 0;
+    padding: 0;
 
-  .home__button-image--default {
-    opacity: 1;
-  }
+    border: none;
+    background: transparent;
+    cursor: pointer;
 
-  .home__button-image--hover {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-  }
+    transform-origin: center;
+    transition: transform 0.5s ease;
 
-  &:hover {
-    transform: scale(1.07);
+    .home__button-image {
+      display: block;
+      width: 100%;
+      height: auto;
+
+      transition: opacity 0.5s ease;
+    }
 
     .home__button-image--default {
-      opacity: 0;
+      opacity: 1;
     }
 
     .home__button-image--hover {
-      opacity: 1;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+
+    &:hover {
+      transform: scale(1.07);
+
+      .home__button-image--default {
+        opacity: 0;
+      }
+
+      .home__button-image--hover {
+        opacity: 1;
+      }
+    }
+
+    &:focus-visible {
+      outline: 3px solid #f0ea6e;
+      outline-offset: 5px;
     }
   }
 
-  &:focus-visible {
-    outline: 3px solid #f0ea6e;
-    outline-offset: 5px;
-  }
-}
-
   &__decoration {
-  position: absolute;
-  bottom: -20px;
-  left: -110px;
+    position: absolute;
+    bottom: -20px;
+    left: -110px;
 
-  width: 520px;
-  height: 520px;
+    width: 520px;
+    height: 520px;
 
-  color: #393a34;
+    color: #393a34;
 
-  pointer-events: none;
-  user-select: none;
-}
+    pointer-events: none;
+    user-select: none;
+  }
 }
