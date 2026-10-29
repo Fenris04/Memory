@@ -1,3 +1,4 @@
+
 /**
  * Defines the available player colors.
  */

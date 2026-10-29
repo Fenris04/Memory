@@ -41,7 +41,7 @@ function showThemePreview(theme: string): void {
 }
 
 /**
- * Restores the selected theme after a hover or keyboard focus ends.
+ * Restores the selected theme after hover or keyboard focus ends.
  *
  * @returns Nothing.
  */
@@ -55,6 +55,53 @@ function restoreSelectedThemePreview(): void {
 }
 
 /**
+ * Registers hover interactions for one theme option.
+ *
+ * @param input - The theme radio input.
+ * @returns Nothing.
+ */
+function registerThemeHover(input: HTMLInputElement): void {
+  const OPTION: HTMLLabelElement | null = input.closest('label');
+
+  OPTION?.addEventListener(
+    'mouseenter',
+    (): void => showThemePreview(input.value)
+  );
+
+  OPTION?.addEventListener(
+    'mouseleave',
+    restoreSelectedThemePreview
+  );
+}
+
+/**
+ * Registers keyboard focus and selection interactions.
+ *
+ * @param input - The theme radio input.
+ * @returns Nothing.
+ */
+function registerThemeFocus(input: HTMLInputElement): void {
+  input.addEventListener(
+    'focus',
+    (): void => showThemePreview(input.value)
+  );
+
+  input.addEventListener('blur', restoreSelectedThemePreview);
+  input.addEventListener('change', restoreSelectedThemePreview);
+}
+
+/**
+ * Registers all interactions for one theme option.
+ *
+ * @param input - The theme radio input.
+ * @returns Nothing.
+ */
+function registerThemeOption(input: HTMLInputElement): void {
+  registerThemeHover(input);
+  registerThemeFocus(input);
+}
+
+/**
  * Registers preview hover, focus, and selection interactions.
  *
  * @returns Nothing.
@@ -63,42 +110,16 @@ function setupThemePreviewInteractions(): void {
   const THEME_OPTIONS: NodeListOf<HTMLInputElement> =
     document.querySelectorAll('input[name="card-theme"]');
 
-  THEME_OPTIONS.forEach((input: HTMLInputElement): void => {
-    const OPTION: HTMLLabelElement | null = input.closest('label');
-
-    OPTION?.addEventListener('mouseenter', (): void => {
-      showThemePreview(input.value);
-    });
-
-    OPTION?.addEventListener(
-      'mouseleave',
-      restoreSelectedThemePreview
-    );
-
-    input.addEventListener('focus', (): void => {
-      showThemePreview(input.value);
-    });
-
-    input.addEventListener(
-      'blur',
-      restoreSelectedThemePreview
-    );
-
-    input.addEventListener(
-      'change',
-      restoreSelectedThemePreview
-    );
-  });
-
+  THEME_OPTIONS.forEach(registerThemeOption);
   restoreSelectedThemePreview();
 }
 
 /**
- * Registers listeners for the settings screen.
+ * Registers game mode change listeners.
  *
  * @returns Nothing.
  */
-export function setupSettingsInteractions(): void {
+function registerGameModeInteractions(): void {
   const GAME_MODES: NodeListOf<HTMLInputElement> =
     document.querySelectorAll('input[name="game-mode"]');
 
@@ -108,7 +129,15 @@ export function setupSettingsInteractions(): void {
       updateBotDifficultyVisibility
     );
   });
+}
 
+/**
+ * Registers listeners for the settings screen.
+ *
+ * @returns Nothing.
+ */
+export function setupSettingsInteractions(): void {
+  registerGameModeInteractions();
   updateBotDifficultyVisibility();
   setupThemePreviewInteractions();
 }

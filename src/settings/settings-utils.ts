@@ -1,3 +1,4 @@
+
 import type {
   PlayerColor,
   BoardSize,
@@ -30,7 +31,9 @@ function getSelectedValue(name: string): string | null {
 export function getSelectedPlayerColor(): PlayerColor {
   const VALUE: string | null = getSelectedValue('player-color');
 
-  return VALUE === 'orange' ? 'orange' : 'blue';
+  return VALUE === 'orange'
+    ? 'orange'
+    : DEFAULT_SETTINGS.playerColor;
 }
 
 /**
@@ -45,7 +48,7 @@ export function getSelectedBoardSize(): BoardSize {
     return VALUE;
   }
 
-  return '4x4';
+  return DEFAULT_SETTINGS.boardSize;
 }
 
 /**
@@ -60,7 +63,7 @@ export function getSelectedTheme(): CardTheme {
     return VALUE;
   }
 
-  return 'code-vibes';
+  return DEFAULT_SETTINGS.theme;
 }
 
 /**
@@ -100,7 +103,7 @@ export function getSelectedGameMode(): GameMode {
 
   return SELECTED_MODE === 'player-vs-bot'
     ? 'player-vs-bot'
-    : 'player-vs-player';
+    : DEFAULT_SETTINGS.gameMode;
 }
 
 /**
@@ -118,5 +121,5 @@ export function getSelectedBotDifficulty(): BotDifficulty {
     return SELECTED;
   }
 
-  return 'easy';
+  return DEFAULT_SETTINGS.botDifficulty;
 }
