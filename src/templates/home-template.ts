@@ -1,6 +1,6 @@
 
-import playButtonDefault from '../assets/Varianten/Primary-button/Property-1-Default__2030-355.svg';
-import playButtonHover from '../assets/Varianten/Primary-button/Property-1-hover__2030-357.svg';
+import arrowIcon from '../assets/Varianten/arrow-right.svg';
+import controllerIcon from '../assets/Varianten/stadia_controller.svg';
 
 /**
  * Creates the HTML structure for the home screen.
@@ -25,18 +25,21 @@ export function renderHome(): string {
             class="home__start-button"
             id="start-button"
             type="button"
-            aria-label="Play"
           >
             <img
-              class="home__button-image home__button-image--default"
-              src="${playButtonDefault}"
+              class="home__button-controller"
+              src="${controllerIcon}"
               alt=""
+              aria-hidden="true"
             />
 
+            <span class="home__button-label">Play</span>
+
             <img
-              class="home__button-image home__button-image--hover"
-              src="${playButtonHover}"
+              class="home__button-arrow"
+              src="${arrowIcon}"
               alt=""
+              aria-hidden="true"
             />
           </button>
         </div>
@@ -63,10 +66,33 @@ export function renderHome(): string {
           stroke-linecap="round"
         />
 
-        <circle cx="300" cy="255" r="20" fill="currentColor" />
-        <circle cx="355" cy="255" r="20" fill="currentColor" />
-        <circle cx="300" cy="310" r="20" fill="currentColor" />
-        <circle cx="355" cy="310" r="20" fill="currentColor" />
+        <circle
+          cx="300"
+          cy="255"
+          r="20"
+          fill="currentColor"
+        />
+
+        <circle
+          cx="355"
+          cy="255"
+          r="20"
+          fill="currentColor"
+        />
+
+        <circle
+          cx="300"
+          cy="310"
+          r="20"
+          fill="currentColor"
+        />
+
+        <circle
+          cx="355"
+          cy="310"
+          r="20"
+          fill="currentColor"
+        />
       </svg>
     </section>
   `;

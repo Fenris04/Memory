@@ -68,53 +68,76 @@
 
   #start-button {
     position: relative;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
 
-    width: min(290px, 100%);
+    min-height: 112px;
     margin: 80px auto 0;
-    padding: 0;
+    padding: 24px 28px;
 
     border: none;
-    background: transparent;
+    border-radius: 0;
+    background-color: #f0ea6e;
+    color: #303030;
+
+    font-family: 'Almarai', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+
     cursor: pointer;
-
     transform-origin: center;
-    transition: transform 0.5s ease;
 
-    .home__button-image {
-      display: block;
-      width: 100%;
-      height: auto;
-
-      transition: opacity 0.5s ease;
-    }
-
-    .home__button-image--default {
-      opacity: 1;
-    }
-
-    .home__button-image--hover {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-    }
+    transition:
+      transform 0.4s ease,
+      background-color 0.4s ease;
 
     &:hover {
       transform: scale(1.07);
+      background-color: #f5ef7d;
 
-      .home__button-image--default {
-        opacity: 0;
+      .home__button-arrow {
+        transform: translateX(6px);
       }
 
-      .home__button-image--hover {
-        opacity: 1;
+      .home__button-controller {
+        transform: rotate(-8deg);
       }
+    }
+
+    &:active {
+      transform: scale(1.03);
     }
 
     &:focus-visible {
-      outline: 3px solid #f0ea6e;
+      outline: 3px solid #ffffff;
       outline-offset: 5px;
     }
+  }
+
+  &__button-controller {
+    display: block;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+
+    transition: transform 0.4s ease;
+  }
+
+  &__button-label {
+    display: block;
+    white-space: nowrap;
+  }
+
+  &__button-arrow {
+    display: block;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+
+    transition: transform 0.4s ease;
   }
 
   &__decoration {
