@@ -194,7 +194,7 @@ function renderBotDifficultySettings(): string {
  */
 export function renderSettings(): string {
   return `
-    <section class="settings">
+    <main class="settings">
       <div class="settings__container">
         <header class="settings__header">
           <h1 class="settings__title">Settings</h1>
@@ -295,7 +295,7 @@ export function renderSettings(): string {
           </div>
         </div>
       </div>
-    </section>
+    </main>
   `;
 }
 

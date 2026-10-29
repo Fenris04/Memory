@@ -178,7 +178,7 @@ export function renderGameOver(
     : getWinnerColor(WINNER, playerColor);
 
   return `
-    <section
+    <main
       class="game-over"
       data-theme="${theme}"
       data-result="${RESULT_COLOR}"
@@ -198,6 +198,6 @@ export function renderGameOver(
         ${renderResultIcon(WINNER, theme)}
         ${renderResultActions()}
       </div>
-    </section>
+    </main>
   `;
 }

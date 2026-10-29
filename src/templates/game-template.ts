@@ -130,7 +130,7 @@ export function renderGame(
   state: GameState
 ): string {
   return `
-    <section class="game" data-theme="${settings.theme}">
+    <main class="game" data-theme="${settings.theme}">
       <header class="game__header">
         ${renderScoreboard(
           state,
@@ -152,6 +152,6 @@ export function renderGame(
       </div>
 
       ${renderExitDialog(settings.theme)}
-    </section>
+    </main>
   `;
 }

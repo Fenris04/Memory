@@ -12,7 +12,7 @@ import controllerIcon from '../assets/Varianten/stadia_controller.svg';
  */
 export function renderHome(): string {
   return `
-    <section class="home">
+    <main class="home">
       <div class="home__content">
         <div class="home__hero">
           <div class="home__text">
@@ -94,6 +94,6 @@ export function renderHome(): string {
           fill="currentColor"
         />
       </svg>
-    </section>
+    </main>
   `;
 }

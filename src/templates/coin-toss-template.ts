@@ -1,3 +1,4 @@
+
 import { getPlayerName } from '../game/player-utils';
 import type { PlayerNumber } from '../game/game-state';
 import type { GameMode } from '../settings/game-settings';
@@ -9,7 +10,7 @@ import type { GameMode } from '../settings/game-settings';
  */
 export function renderCoinToss(): string {
   return `
-    <section class="coin-toss" aria-label="Coin toss">
+    <main class="coin-toss" aria-label="Coin toss">
       <h1 class="coin-toss__title">Who starts?</h1>
 
       <div class="coin-toss__coin" aria-hidden="true">
@@ -27,7 +28,7 @@ export function renderCoinToss(): string {
       <p class="coin-toss__message" role="status">
         Tossing a coin...
       </p>
-    </section>
+    </main>
   `;
 }
 
