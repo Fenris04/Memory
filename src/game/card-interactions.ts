@@ -3,6 +3,8 @@ import type { MemoryCard } from './card-types';
 
 const FLIP_BACK_DELAY: number = 1000;
 const FLIP_ANIMATION_DURATION: number = 600;
+const CARDS_PER_TURN: number = 2;
+const CARD_SELECTOR: string = '.game__card';
 
 /**
  * Defines the events reported by card interactions.
@@ -99,7 +101,6 @@ function markMatchedCards(
 ): void {
   first.classList.add('is-matched');
   second.classList.add('is-matched');
-
   first.disabled = true;
   second.disabled = true;
   revealedCards = [];
@@ -124,9 +125,28 @@ function hideMismatchedCards(): void {
  */
 function finishMissedTurn(events: CardInteractionEvents): void {
   turnChangeTimer = null;
-
   events.onMiss();
+  isBoardLocked = false;
+}
 
+/**
+ * Completes a successful match after the flip animation.
+ *
+ * @param events - The registered game events.
+ * @returns Nothing.
+ */
+function finishMatch(events: CardInteractionEvents): void {
+  matchTimer = null;
+
+  const [FIRST_CARD, SECOND_CARD] = revealedCards;
+
+  if (!FIRST_CARD || !SECOND_CARD) {
+    isBoardLocked = false;
+    return;
+  }
+
+  markMatchedCards(FIRST_CARD, SECOND_CARD);
+  events.onMatch();
   isBoardLocked = false;
 }
 
@@ -140,21 +160,22 @@ function handleMatch(events: CardInteractionEvents): void {
   isBoardLocked = true;
 
   matchTimer = window.setTimeout(
-    (): void => {
-      matchTimer = null;
+    (): void => finishMatch(events),
+    FLIP_ANIMATION_DURATION
+  );
+}
 
-      const [FIRST_CARD, SECOND_CARD] = revealedCards;
+/**
+ * Schedules the turn change after mismatched cards are hidden.
+ *
+ * @param events - The registered game events.
+ * @returns Nothing.
+ */
+function scheduleTurnChange(events: CardInteractionEvents): void {
+  hideMismatchedCards();
 
-      if (!FIRST_CARD || !SECOND_CARD) {
-        isBoardLocked = false;
-        return;
-      }
-
-      markMatchedCards(FIRST_CARD, SECOND_CARD);
-      events.onMatch();
-
-      isBoardLocked = false;
-    },
+  turnChangeTimer = window.setTimeout(
+    (): void => finishMissedTurn(events),
     FLIP_ANIMATION_DURATION
   );
 }
@@ -169,14 +190,7 @@ function handleMiss(events: CardInteractionEvents): void {
   isBoardLocked = true;
 
   flipBackTimer = window.setTimeout(
-    (): void => {
-      hideMismatchedCards();
-
-      turnChangeTimer = window.setTimeout(
-        (): void => finishMissedTurn(events),
-        FLIP_ANIMATION_DURATION
-      );
-    },
+    (): void => scheduleTurnChange(events),
     FLIP_BACK_DELAY
   );
 }
@@ -212,7 +226,7 @@ function isCardAvailable(card: HTMLButtonElement): boolean {
   return !isBoardLocked &&
     !card.disabled &&
     !card.classList.contains('is-flipped') &&
-    revealedCards.length < 2;
+    revealedCards.length < CARDS_PER_TURN;
 }
 
 /**
@@ -229,7 +243,7 @@ function selectCard(card: HTMLButtonElement): void {
   revealCard(card);
   reportRevealedCard(card);
 
-  if (revealedCards.length === 2) {
+  if (revealedCards.length === CARDS_PER_TURN) {
     checkRevealedCards(activeCards, activeEvents);
   }
 }
@@ -255,7 +269,7 @@ function handleHumanClick(card: HTMLButtonElement): void {
  */
 export function getAvailableCards(): HTMLButtonElement[] {
   const CARDS: NodeListOf<HTMLButtonElement> =
-    document.querySelectorAll<HTMLButtonElement>('.game__card');
+    document.querySelectorAll<HTMLButtonElement>(CARD_SELECTOR);
 
   return Array.from(CARDS).filter(isCardAvailable);
 }
@@ -271,6 +285,19 @@ export function selectBotCard(card: HTMLButtonElement): void {
 }
 
 /**
+ * Registers a click event for a Memory card.
+ *
+ * @param card - The card element to register.
+ * @returns Nothing.
+ */
+function registerCardClick(card: HTMLButtonElement): void {
+  card.addEventListener(
+    'click',
+    (): void => handleHumanClick(card)
+  );
+}
+
+/**
  * Registers click events for all Memory cards.
  *
  * @param cards - All cards in the current game.
@@ -282,19 +309,41 @@ export function setupCardInteractions(
   events: CardInteractionEvents
 ): void {
   resetCardInteractions();
-
   activeCards = cards;
   activeEvents = events;
 
   const CARD_ELEMENTS: NodeListOf<HTMLButtonElement> =
-    document.querySelectorAll<HTMLButtonElement>('.game__card');
+    document.querySelectorAll<HTMLButtonElement>(CARD_SELECTOR);
 
-  CARD_ELEMENTS.forEach((card: HTMLButtonElement): void => {
-    card.addEventListener(
-      'click',
-      (): void => handleHumanClick(card)
-    );
-  });
+  CARD_ELEMENTS.forEach(registerCardClick);
+}
+
+/**
+ * Cancels all pending card interaction timers.
+ *
+ * @returns Nothing.
+ */
+function clearInteractionTimers(): void {
+  if (flipBackTimer !== null) {
+    window.clearTimeout(flipBackTimer);
+  }
+  if (turnChangeTimer !== null) {
+    window.clearTimeout(turnChangeTimer);
+  }
+  if (matchTimer !== null) {
+    window.clearTimeout(matchTimer);
+  }
+}
+
+/**
+ * Resets the stored timer references.
+ *
+ * @returns Nothing.
+ */
+function resetTimerReferences(): void {
+  flipBackTimer = null;
+  turnChangeTimer = null;
+  matchTimer = null;
 }
 
 /**
@@ -303,21 +352,8 @@ export function setupCardInteractions(
  * @returns Nothing.
  */
 export function resetCardInteractions(): void {
-  if (flipBackTimer !== null) {
-    window.clearTimeout(flipBackTimer);
-  }
-
-  if (turnChangeTimer !== null) {
-    window.clearTimeout(turnChangeTimer);
-  }
-
-  if (matchTimer !== null) {
-    window.clearTimeout(matchTimer);
-  }
-
-  flipBackTimer = null;
-  turnChangeTimer = null;
-  matchTimer = null;
+  clearInteractionTimers();
+  resetTimerReferences();
   revealedCards = [];
   isBoardLocked = false;
   activeCards = [];

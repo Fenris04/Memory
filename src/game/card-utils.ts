@@ -1,4 +1,9 @@
+
 import type { CardImages, MemoryCard } from './card-types';
+
+const CARDS_PER_PAIR: number = 2;
+const FIRST_CARD_OFFSET: number = 0;
+const SECOND_CARD_OFFSET: number = 1;
 
 /**
  * Creates two matching cards from one card design.
@@ -11,9 +16,14 @@ function createPair(
   images: CardImages,
   pairId: number
 ): MemoryCard[] {
+  const FIRST_CARD_ID: number =
+    pairId * CARDS_PER_PAIR + FIRST_CARD_OFFSET;
+  const SECOND_CARD_ID: number =
+    pairId * CARDS_PER_PAIR + SECOND_CARD_OFFSET;
+
   return [
-    { id: pairId * 2, pairId, ...images },
-    { id: pairId * 2 + 1, pairId, ...images }
+    { id: FIRST_CARD_ID, pairId, ...images },
+    { id: SECOND_CARD_ID, pairId, ...images }
   ];
 }
 
@@ -45,15 +55,16 @@ export function createCards(
  * @returns A new array containing the shuffled cards.
  */
 export function shuffleCards(cards: MemoryCard[]): MemoryCard[] {
-  // Create a copy of the original cards.
   const SHUFFLED_CARDS: MemoryCard[] = [...cards];
 
-  // Iterate backward through the array.
-  for (let index: number = SHUFFLED_CARDS.length - 1; index > 0; index--) {
-    // Choose a random position.
-    const RANDOM_INDEX: number = Math.floor(Math.random() * (index + 1));
+  for (
+    let index: number = SHUFFLED_CARDS.length - 1;
+    index > 0;
+    index--
+  ) {
+    const RANDOM_INDEX: number =
+      Math.floor(Math.random() * (index + 1));
 
-    // Swap the current card with the randomly selected card.
     [SHUFFLED_CARDS[index], SHUFFLED_CARDS[RANDOM_INDEX]] =
       [SHUFFLED_CARDS[RANDOM_INDEX], SHUFFLED_CARDS[index]];
   }

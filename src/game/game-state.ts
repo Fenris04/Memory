@@ -1,7 +1,13 @@
+
 /**
  * Identifies one of the two players.
  */
 export type PlayerNumber = 1 | 2;
+
+const PLAYER_ONE: PlayerNumber = 1;
+const PLAYER_TWO: PlayerNumber = 2;
+const COIN_TOSS_THRESHOLD: number = 0.5;
+const INITIAL_SCORE: number = 0;
 
 /**
  * Stores the current state of a Memory Game.
@@ -22,7 +28,9 @@ export interface GameState {
 export function tossCoin(): PlayerNumber {
   const COIN_RESULT: number = Math.random();
 
-  return COIN_RESULT < 0.5 ? 1 : 2;
+  return COIN_RESULT < COIN_TOSS_THRESHOLD
+    ? PLAYER_ONE
+    : PLAYER_TWO;
 }
 
 /**
@@ -38,9 +46,9 @@ export function createGameState(
 ): GameState {
   return {
     currentPlayer: startingPlayer,
-    playerOneScore: 0,
-    playerTwoScore: 0,
-    matchedPairs: 0,
+    playerOneScore: INITIAL_SCORE,
+    playerTwoScore: INITIAL_SCORE,
+    matchedPairs: INITIAL_SCORE,
     totalPairs
   };
 }
@@ -60,7 +68,9 @@ export function getNextStartingPlayer(
     return tossCoin();
   }
 
-  return state.playerOneScore < state.playerTwoScore ? 1 : 2;
+  return state.playerOneScore < state.playerTwoScore
+    ? PLAYER_ONE
+    : PLAYER_TWO;
 }
 
 /**
@@ -72,7 +82,7 @@ export function getNextStartingPlayer(
  * @returns Nothing.
  */
 export function awardPoint(state: GameState): void {
-  if (state.currentPlayer === 1) {
+  if (state.currentPlayer === PLAYER_ONE) {
     state.playerOneScore++;
   } else {
     state.playerTwoScore++;
@@ -88,7 +98,9 @@ export function awardPoint(state: GameState): void {
  * @returns Nothing.
  */
 export function switchPlayer(state: GameState): void {
-  state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+  state.currentPlayer = state.currentPlayer === PLAYER_ONE
+    ? PLAYER_TWO
+    : PLAYER_ONE;
 }
 
 /**
@@ -116,5 +128,7 @@ export function getWinner(
     return null;
   }
 
-  return state.playerOneScore > state.playerTwoScore ? 1 : 2;
+  return state.playerOneScore > state.playerTwoScore
+    ? PLAYER_ONE
+    : PLAYER_TWO;
 }

@@ -1,3 +1,4 @@
+
 import {
   getAvailableCards,
   selectBotCard
@@ -14,6 +15,10 @@ import type { BotDifficulty } from '../settings/game-settings';
 const BOT_THINK_DELAY: number = 1400;
 const BOT_SECOND_CARD_DELAY: number = 700;
 const BOT_NEXT_TURN_DELAY: number = 1200;
+const MEDIUM_MEMORY_CHANCE: number = 0.5;
+const MEDIUM_FORGET_CHANCE: number = 0.5;
+const FLIPPED_CARD_SELECTOR: string =
+  '.game__card.is-flipped:not(.is-matched)';
 
 let botTimer: number | null = null;
 let botDifficulty: BotDifficulty = 'easy';
@@ -31,7 +36,9 @@ function getRandomCard(
     return undefined;
   }
 
-  const RANDOM_INDEX: number = Math.floor(Math.random() * cards.length);
+  const RANDOM_INDEX: number =
+    Math.floor(Math.random() * cards.length);
+
   return cards[RANDOM_INDEX];
 }
 
@@ -61,7 +68,8 @@ function getKnownPairCard(): HTMLButtonElement | undefined {
       Number(card.dataset.cardId)
   );
 
-  const PAIR: [number, number] | null = findKnownPair(AVAILABLE_IDS);
+  const PAIR: [number, number] | null =
+    findKnownPair(AVAILABLE_IDS);
 
   return PAIR ? findAvailableCard(PAIR[0]) : undefined;
 }
@@ -155,18 +163,26 @@ function playSecondCard(firstCardId: number): void {
 function playFirstCard(): void {
   botTimer = null;
 
-  const FIRST_CARD: HTMLButtonElement | undefined = chooseFirstCard();
+  const FIRST_CARD: HTMLButtonElement | undefined =
+    chooseFirstCard();
 
   if (!FIRST_CARD) {
     return;
   }
 
   selectBotCard(FIRST_CARD);
+  scheduleSecondCard(Number(FIRST_CARD.dataset.cardId));
+}
 
-  const FIRST_CARD_ID: number = Number(FIRST_CARD.dataset.cardId);
-
+/**
+ * Schedules the bot's second card selection.
+ *
+ * @param firstCardId - The first revealed card's ID.
+ * @returns Nothing.
+ */
+function scheduleSecondCard(firstCardId: number): void {
   botTimer = window.setTimeout(
-    (): void => playSecondCard(FIRST_CARD_ID),
+    (): void => playSecondCard(firstCardId),
     BOT_SECOND_CARD_DELAY
   );
 }
@@ -225,17 +241,11 @@ export function resumeBotTurn(): void {
 
   const FLIPPED_CARD: HTMLButtonElement | null =
     document.querySelector<HTMLButtonElement>(
-      '.game__card.is-flipped:not(.is-matched)'
+      FLIPPED_CARD_SELECTOR
     );
 
   if (FLIPPED_CARD) {
-    const CARD_ID: number = Number(FLIPPED_CARD.dataset.cardId);
-
-    botTimer = window.setTimeout(
-      (): void => playSecondCard(CARD_ID),
-      BOT_SECOND_CARD_DELAY
-    );
-
+    scheduleSecondCard(Number(FLIPPED_CARD.dataset.cardId));
     return;
   }
 
@@ -252,7 +262,8 @@ function applyMediumMemoryLoss(): void {
     return;
   }
 
-  const SHOULD_FORGET: boolean = Math.random() < 0.5;
+  const SHOULD_FORGET: boolean =
+    Math.random() < MEDIUM_FORGET_CHANCE;
 
   if (SHOULD_FORGET) {
     forgetRandomCard();
@@ -270,7 +281,7 @@ function shouldUseMemory(): boolean {
   }
 
   if (botDifficulty === 'medium') {
-    return Math.random() < 0.5;
+    return Math.random() < MEDIUM_MEMORY_CHANCE;
   }
 
   return false;

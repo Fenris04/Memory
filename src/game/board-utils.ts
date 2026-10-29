@@ -1,3 +1,4 @@
+
 import type { BoardSize } from '../settings/game-settings';
 
 /**

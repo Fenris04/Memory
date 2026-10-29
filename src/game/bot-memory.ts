@@ -1,3 +1,4 @@
+
 /**
  * Represents a card that the bot has already seen.
  */
@@ -34,6 +35,24 @@ export function rememberCard(
 }
 
 /**
+ * Finds another remembered card with the same pair ID.
+ *
+ * @param firstCard - The first card of the pair.
+ * @param available - All available remembered cards.
+ * @returns The matching card or undefined.
+ */
+function findMatchingCard(
+  firstCard: RememberedCard,
+  available: RememberedCard[]
+): RememberedCard | undefined {
+  return available.find(
+    (card: RememberedCard): boolean =>
+      card.cardId !== firstCard.cardId &&
+      card.pairId === firstCard.pairId
+  );
+}
+
+/**
  * Finds a known matching pair.
  *
  * @param availableIds - IDs of cards still available.
@@ -43,19 +62,15 @@ export function findKnownPair(
   availableIds: number[]
 ): [number, number] | null {
   const AVAILABLE: RememberedCard[] = rememberedCards.filter(
-    (card: RememberedCard): boolean =>
-      availableIds.includes(card.cardId)
+    (card: RememberedCard): boolean => availableIds.includes(card.cardId)
   );
 
   for (const FIRST_CARD of AVAILABLE) {
-    const SECOND_CARD: RememberedCard | undefined = AVAILABLE.find(
-      (card: RememberedCard): boolean =>
-        card.cardId !== FIRST_CARD.cardId &&
-        card.pairId === FIRST_CARD.pairId
-    );
+    const MATCH: RememberedCard | undefined =
+      findMatchingCard(FIRST_CARD, AVAILABLE);
 
-    if (SECOND_CARD) {
-      return [FIRST_CARD.cardId, SECOND_CARD.cardId];
+    if (MATCH) {
+      return [FIRST_CARD.cardId, MATCH.cardId];
     }
   }
 

@@ -1,7 +1,10 @@
+
 import type { CardTheme } from '../settings/game-settings';
 import type { CardImages } from './card-types';
 
-// Load all individual SVG variants as image URLs.
+/**
+ * Loads all individual SVG variants as image URLs.
+ */
 const VARIANT_IMAGES: Record<string, string> = import.meta.glob(
   '../assets/Varianten/**/*.svg',
   {
@@ -10,6 +13,26 @@ const VARIANT_IMAGES: Record<string, string> = import.meta.glob(
     import: 'default'
   }
 );
+
+/**
+ * Defines the maximum number of card designs per theme.
+ */
+const MAX_CARD_DESIGNS: number = 18;
+
+/**
+ * Defines the starting number of the card designs.
+ */
+const FIRST_CARD_NUMBER: number = 1;
+
+/**
+ * Defines the required number of digits for food card folders.
+ */
+const FOOD_CARD_NUMBER_LENGTH: number = 2;
+
+/**
+ * Defines the character used to pad food card numbers.
+ */
+const CARD_NUMBER_PADDING: string = '0';
 
 /**
  * Defines the folder prefixes for each card theme.
@@ -40,19 +63,6 @@ const FRONT_COMPONENTS: Record<CardTheme, number> = {
   food: 3,
   gaming: 2
 };
-
-/**
- * Returns the card number from a variant folder path.
- *
- * @param path - The SVG file path.
- * @returns The card number or zero.
- */
-function getCardNumber(path: string): number {
-  const MATCH: RegExpMatchArray | null =
-    path.match(/card-(\d+)\//i);
-
-  return MATCH ? Number(MATCH[1]) : 0;
-}
 
 /**
  * Finds the SVG URL for a specific component.
@@ -110,7 +120,10 @@ function getCardPaths(
   cardNumber: number
 ): string[] {
   const FORMATTED_NUMBER: string = theme === 'food'
-    ? String(cardNumber).padStart(2, '0')
+    ? String(cardNumber).padStart(
+        FOOD_CARD_NUMBER_LENGTH,
+        CARD_NUMBER_PADDING
+      )
     : String(cardNumber);
 
   const FOLDER_NAME: string =
@@ -129,8 +142,8 @@ function getCardPaths(
  */
 export function getThemeImages(theme: CardTheme): CardImages[] {
   const CARD_NUMBERS: number[] = Array.from(
-    { length: 18 },
-    (_: unknown, index: number): number => index + 1
+    { length: MAX_CARD_DESIGNS },
+    (_: unknown, index: number): number => index + FIRST_CARD_NUMBER
   );
 
   return CARD_NUMBERS.flatMap((cardNumber: number): CardImages[] => {

@@ -1,5 +1,8 @@
+
 import type { GameMode } from '../settings/game-settings';
 import type { PlayerNumber } from './game-state';
+
+const BOT_PLAYER_NUMBER: PlayerNumber = 2;
 
 /**
  * Returns the display name for a player.
@@ -12,7 +15,7 @@ export function getPlayerName(
   player: PlayerNumber,
   gameMode: GameMode
 ): string {
-  if (player === 2 && gameMode === 'player-vs-bot') {
+  if (player === BOT_PLAYER_NUMBER && gameMode === 'player-vs-bot') {
     return 'Bot';
   }
 
