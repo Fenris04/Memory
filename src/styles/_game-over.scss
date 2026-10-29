@@ -5,6 +5,10 @@
   --theme-text: #ffffff;
   --result-color: #60cbbb;
 
+  box-sizing: border-box;
+  height: 100dvh;
+  overflow: hidden;
+
   position: relative;
 
   display: flex;
