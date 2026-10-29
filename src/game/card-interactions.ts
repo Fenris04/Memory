@@ -18,6 +18,7 @@ let revealedCards: HTMLButtonElement[] = [];
 let isBoardLocked: boolean = false;
 let flipBackTimer: number | null = null;
 let turnChangeTimer: number | null = null;
+let matchTimer: number | null = null;
 let activeCards: MemoryCard[] = [];
 let activeEvents: CardInteractionEvents | null = null;
 
@@ -130,16 +131,32 @@ function finishMissedTurn(events: CardInteractionEvents): void {
 }
 
 /**
- * Handles a successful card match.
+ * Handles a successful card match after the flip animation.
  *
  * @param events - The registered game events.
  * @returns Nothing.
  */
 function handleMatch(events: CardInteractionEvents): void {
-  const [FIRST_CARD, SECOND_CARD] = revealedCards;
+  isBoardLocked = true;
 
-  markMatchedCards(FIRST_CARD, SECOND_CARD);
-  events.onMatch();
+  matchTimer = window.setTimeout(
+    (): void => {
+      matchTimer = null;
+
+      const [FIRST_CARD, SECOND_CARD] = revealedCards;
+
+      if (!FIRST_CARD || !SECOND_CARD) {
+        isBoardLocked = false;
+        return;
+      }
+
+      markMatchedCards(FIRST_CARD, SECOND_CARD);
+      events.onMatch();
+
+      isBoardLocked = false;
+    },
+    FLIP_ANIMATION_DURATION
+  );
 }
 
 /**
@@ -294,8 +311,13 @@ export function resetCardInteractions(): void {
     window.clearTimeout(turnChangeTimer);
   }
 
+  if (matchTimer !== null) {
+    window.clearTimeout(matchTimer);
+  }
+
   flipBackTimer = null;
   turnChangeTimer = null;
+  matchTimer = null;
   revealedCards = [];
   isBoardLocked = false;
   activeCards = [];
