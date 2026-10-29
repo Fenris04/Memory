@@ -1,28 +1,4 @@
 
-import codeVibesPreview from '../assets/Varianten/Theme-Visual/Property-1-IT-logos__2285-4060.svg';
-import daProjectsPreview from '../assets/Varianten/Theme-Visual/Property-1-DA-projects__2285-4173.svg';
-import foodPreview from '../assets/Varianten/Theme-Visual/Property-1-foods__2285-4059.svg';
-import gamingPreview from '../assets/Varianten/Theme-Visual/Property-1-gameing__2285-4061.svg';
-
-const THEME_PREVIEWS: Record<string, { src: string; alt: string }> = {
-  'code-vibes': {
-    src: codeVibesPreview,
-    alt: 'Code Vibes card theme preview',
-  },
-  gaming: {
-    src: gamingPreview,
-    alt: 'Gaming card theme preview',
-  },
-  'da-projects': {
-    src: daProjectsPreview,
-    alt: 'DA Projects card theme preview',
-  },
-  food: {
-    src: foodPreview,
-    alt: 'Food card theme preview',
-  },
-};
-
 /**
  * Updates the visibility and availability of bot settings.
  *
@@ -46,30 +22,26 @@ function updateBotDifficultyVisibility(): void {
 }
 
 /**
- * Displays the preview image for a given theme.
+ * Shows one already-loaded theme preview without changing image sources.
  *
- * @param theme - Theme identifier.
+ * @param theme - The theme to display.
  * @returns Nothing.
  */
 function showThemePreview(theme: string): void {
-  const PREVIEW: HTMLImageElement | null =
-    document.querySelector('#theme-preview');
+  const PREVIEWS: NodeListOf<HTMLImageElement> =
+    document.querySelectorAll('[data-theme-preview]');
 
-  const THEME = THEME_PREVIEWS[theme];
+  PREVIEWS.forEach((preview: HTMLImageElement): void => {
+    const IS_ACTIVE: boolean =
+      preview.dataset.themePreview === theme;
 
-  if (!PREVIEW || !THEME) {
-    return;
-  }
-
-  if (PREVIEW.src !== new URL(THEME.src, document.baseURI).href) {
-    PREVIEW.src = THEME.src;
-  }
-
-  PREVIEW.alt = THEME.alt;
+    preview.classList.toggle('is-active', IS_ACTIVE);
+    preview.setAttribute('aria-hidden', String(!IS_ACTIVE));
+  });
 }
 
 /**
- * Restores the preview of the currently selected theme.
+ * Restores the selected theme after a hover or keyboard focus ends.
  *
  * @returns Nothing.
  */
@@ -77,45 +49,48 @@ function restoreSelectedThemePreview(): void {
   const SELECTED_THEME: HTMLInputElement | null =
     document.querySelector('input[name="card-theme"]:checked');
 
-  if (!SELECTED_THEME) {
-    return;
+  if (SELECTED_THEME) {
+    showThemePreview(SELECTED_THEME.value);
   }
-
-  showThemePreview(SELECTED_THEME.value);
 }
 
 /**
- * Registers hover and keyboard preview interactions.
+ * Registers preview hover, focus, and selection interactions.
  *
  * @returns Nothing.
  */
-function setupThemeHoverPreview(): void {
+function setupThemePreviewInteractions(): void {
   const THEME_OPTIONS: NodeListOf<HTMLInputElement> =
     document.querySelectorAll('input[name="card-theme"]');
 
   THEME_OPTIONS.forEach((input: HTMLInputElement): void => {
     const OPTION: HTMLLabelElement | null = input.closest('label');
 
-    if (!OPTION) {
-      return;
-    }
-
-    OPTION.addEventListener('mouseenter', (): void => {
+    OPTION?.addEventListener('mouseenter', (): void => {
       showThemePreview(input.value);
     });
 
-    OPTION.addEventListener('mouseleave', (): void => {
-      restoreSelectedThemePreview();
-    });
+    OPTION?.addEventListener(
+      'mouseleave',
+      restoreSelectedThemePreview
+    );
 
     input.addEventListener('focus', (): void => {
       showThemePreview(input.value);
     });
 
-    input.addEventListener('blur', (): void => {
-      restoreSelectedThemePreview();
-    });
+    input.addEventListener(
+      'blur',
+      restoreSelectedThemePreview
+    );
+
+    input.addEventListener(
+      'change',
+      restoreSelectedThemePreview
+    );
   });
+
+  restoreSelectedThemePreview();
 }
 
 /**
@@ -128,9 +103,12 @@ export function setupSettingsInteractions(): void {
     document.querySelectorAll('input[name="game-mode"]');
 
   GAME_MODES.forEach((input: HTMLInputElement): void => {
-    input.addEventListener('change', updateBotDifficultyVisibility);
+    input.addEventListener(
+      'change',
+      updateBotDifficultyVisibility
+    );
   });
 
   updateBotDifficultyVisibility();
-  setupThemeHoverPreview();
+  setupThemePreviewInteractions();
 }

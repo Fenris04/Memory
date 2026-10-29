@@ -14,22 +14,22 @@ function renderThemeOptions(): string {
     <fieldset class="settings__group">
       <legend class="settings__label">
         <svg
-        class="settings__group-icon settings__group-icon--themes"
-        viewBox="0 0 32 32"
-        fill="none"
-        aria-hidden="true"
+          class="settings__group-icon settings__group-icon--themes"
+          viewBox="0 0 32 32"
+          fill="none"
+          aria-hidden="true"
         >
-        <path
-          d="M16 3C8.8 3 3 8.7 3 16s5.8 13 13 13h2a4 4 0 0 0 3-6.6 2.5 2.5 0 0 1 1.9-4.1H25c2.2 0 4-1.8 4-4C29 8.1 23.2 3 16 3Z"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linejoin="round"
-        />
-        <circle cx="10" cy="13" r="2" fill="currentColor" />
-        <circle cx="15" cy="8" r="2" fill="currentColor" />
-        <circle cx="22" cy="11" r="2" fill="currentColor" />
-        <circle cx="9" cy="20" r="2" fill="currentColor" />
-      </svg>
+          <path
+            d="M16 3C8.8 3 3 8.7 3 16s5.8 13 13 13h2a4 4 0 0 0 3-6.6 2.5 2.5 0 0 1 1.9-4.1H25c2.2 0 4-1.8 4-4C29 8.1 23.2 3 16 3Z"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+          <circle cx="10" cy="13" r="2" fill="currentColor" />
+          <circle cx="15" cy="8" r="2" fill="currentColor" />
+          <circle cx="22" cy="11" r="2" fill="currentColor" />
+          <circle cx="9" cy="20" r="2" fill="currentColor" />
+        </svg>
         Game themes
       </legend>
 
@@ -66,31 +66,31 @@ function renderColorOptions(): string {
     <fieldset class="settings__group">
       <legend class="settings__label">
         <svg
-        class="settings__group-icon settings__group-icon--player"
-        viewBox="0 0 32 32"
-        fill="none"
-        aria-hidden="true"
+          class="settings__group-icon settings__group-icon--player"
+          viewBox="0 0 32 32"
+          fill="none"
+          aria-hidden="true"
         >
-        <circle
-          cx="16"
-          cy="7"
-          r="4"
-          stroke="currentColor"
-          stroke-width="2.5"
-        />
-        <path
-          d="M12 12H20L21 17L25 21V25H7V21L11 17L12 12Z"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M5 29H27"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-        />
-      </svg>
+          <circle
+            cx="16"
+            cy="7"
+            r="4"
+            stroke="currentColor"
+            stroke-width="2.5"
+          />
+          <path
+            d="M12 12H20L21 17L25 21V25H7V21L11 17L12 12Z"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M5 29H27"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+        </svg>
         Choose player
       </legend>
 
@@ -117,28 +117,28 @@ function renderBoardOptions(): string {
     <fieldset class="settings__group">
       <legend class="settings__label">
         <svg
-        class="settings__group-icon settings__group-icon--board"
-        viewBox="0 0 32 32"
-        fill="none"
-        aria-hidden="true"
+          class="settings__group-icon settings__group-icon--board"
+          viewBox="0 0 32 32"
+          fill="none"
+          aria-hidden="true"
         >
-        <rect
-          x="10"
-          y="4"
-          width="17"
-          height="23"
-          rx="2"
-          transform="rotate(-15 10 4)"
-          stroke="currentColor"
-          stroke-width="2.5"
-        />
-        <path
-          d="M7 10L4 11L8 27L11 26"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linejoin="round"
-        />
-      </svg>
+          <rect
+            x="10"
+            y="4"
+            width="17"
+            height="23"
+            rx="2"
+            transform="rotate(-15 10 4)"
+            stroke="currentColor"
+            stroke-width="2.5"
+          />
+          <path
+            d="M7 10L4 11L8 27L11 26"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+        </svg>
         Board size
       </legend>
 
@@ -169,7 +169,10 @@ function renderGameModeSettings(): string {
   return `
     <fieldset class="settings__group">
       <legend class="settings__label">
-        <span class="settings__group-icon settings__group-icon--mode" aria-hidden="true">♟</span>
+        <span
+          class="settings__group-icon settings__group-icon--mode"
+          aria-hidden="true"
+        >♟</span>
         Game mode
       </legend>
 
@@ -262,19 +265,49 @@ export function renderSettings(): string {
           <div class="settings__right">
             <div class="settings__preview">
               <img
-                id="theme-preview"
-                class="settings__preview-image"
+                class="settings__preview-image is-active"
+                data-theme-preview="code-vibes"
                 src="${codeVibesPreview}"
                 alt="Code Vibes card theme preview"
+              />
+
+              <img
+                class="settings__preview-image"
+                data-theme-preview="gaming"
+                src="${gamingPreview}"
+                alt="Gaming card theme preview"
+                aria-hidden="true"
+              />
+
+              <img
+                class="settings__preview-image"
+                data-theme-preview="da-projects"
+                src="${daProjectsPreview}"
+                alt="DA Projects card theme preview"
+                aria-hidden="true"
+              />
+
+              <img
+                class="settings__preview-image"
+                data-theme-preview="food"
+                src="${foodPreview}"
+                alt="Food card theme preview"
+                aria-hidden="true"
               />
             </div>
 
             <div class="settings__actions">
               <div class="settings__summary" aria-live="polite">
                 <span id="summary-theme">Code Vibes</span>
-                <span class="settings__separator" aria-hidden="true"></span>
+                <span
+                  class="settings__separator"
+                  aria-hidden="true"
+                ></span>
                 <span id="summary-player">Blue Player</span>
-                <span class="settings__separator" aria-hidden="true"></span>
+                <span
+                  class="settings__separator"
+                  aria-hidden="true"
+                ></span>
                 <span id="summary-board">16 Cards</span>
               </div>
 
@@ -311,100 +344,74 @@ export function renderSettings(): string {
 }
 
 /**
- * Initializes the interactive card theme preview
- * and keeps the settings summary up to date.
+ * Updates the selected settings summary and initializes the theme preview.
+ *
+ * @returns Nothing.
  */
 export function initializeThemePreview(): void {
-  const preview = document.querySelector<HTMLImageElement>('#theme-preview');
+  const SUMMARY_THEME: HTMLElement | null =
+    document.querySelector('#summary-theme');
 
-  const summaryTheme = document.querySelector<HTMLElement>('#summary-theme');
-  const summaryPlayer = document.querySelector<HTMLElement>('#summary-player');
-  const summaryBoard = document.querySelector<HTMLElement>('#summary-board');
+  const SUMMARY_PLAYER: HTMLElement | null =
+    document.querySelector('#summary-player');
 
-  if (!preview) {
-    return;
-  }
+  const SUMMARY_BOARD: HTMLElement | null =
+    document.querySelector('#summary-board');
 
-  const previews: Record<string, { src: string; alt: string }> = {
-    'code-vibes': {
-      src: codeVibesPreview,
-      alt: 'Code Vibes card theme preview',
-    },
-    'da-projects': {
-      src: daProjectsPreview,
-      alt: 'DA Projects card theme preview',
-    },
-    food: {
-      src: foodPreview,
-      alt: 'Food card theme preview',
-    },
-    gaming: {
-      src: gamingPreview,
-      alt: 'Gaming card theme preview',
-    },
-  };
-
-  const themeLabels: Record<string, string> = {
+  const THEME_LABELS: Record<string, string> = {
     'code-vibes': 'Code Vibes',
+    gaming: 'Gaming',
     'da-projects': 'DA Projects',
     food: 'Food',
-    gaming: 'Gaming',
   };
 
-  const boardLabels: Record<string, string> = {
+  const BOARD_LABELS: Record<string, string> = {
     '4x4': '16 Cards',
     '4x6': '24 Cards',
     '6x6': '36 Cards',
   };
 
   /**
-   * Updates the preview and summary using the selected settings.
+   * Updates the summary using the selected settings.
+   *
+   * @returns Nothing.
    */
-  function updateSettingsPreview(): void {
-    const selectedTheme = document.querySelector<HTMLInputElement>(
-      'input[name="card-theme"]:checked'
-    );
+  function updateSettingsSummary(): void {
+    const SELECTED_THEME: HTMLInputElement | null =
+      document.querySelector('input[name="card-theme"]:checked');
 
-    const selectedPlayer = document.querySelector<HTMLInputElement>(
-      'input[name="player-color"]:checked'
-    );
+    const SELECTED_PLAYER: HTMLInputElement | null =
+      document.querySelector('input[name="player-color"]:checked');
 
-    const selectedBoard = document.querySelector<HTMLInputElement>(
-      'input[name="board-size"]:checked'
-    );
+    const SELECTED_BOARD: HTMLInputElement | null =
+      document.querySelector('input[name="board-size"]:checked');
 
-    if (selectedTheme) {
-      const selectedPreview = previews[selectedTheme.value];
-
-      if (selectedPreview) {
-        preview!.src = selectedPreview.src;
-        preview!.alt = selectedPreview.alt;
-      }
-
-      if (summaryTheme) {
-        summaryTheme.textContent =
-          themeLabels[selectedTheme.value] ?? 'Game Theme';
-      }
+    if (SELECTED_THEME && SUMMARY_THEME) {
+      SUMMARY_THEME.textContent =
+        THEME_LABELS[SELECTED_THEME.value] ?? 'Game Theme';
     }
 
-    if (selectedPlayer && summaryPlayer) {
-      summaryPlayer.textContent =
-        selectedPlayer.value === 'orange' ? 'Orange Player' : 'Blue Player';
+    if (SELECTED_PLAYER && SUMMARY_PLAYER) {
+      SUMMARY_PLAYER.textContent =
+        SELECTED_PLAYER.value === 'orange'
+          ? 'Orange Player'
+          : 'Blue Player';
     }
 
-    if (selectedBoard && summaryBoard) {
-      summaryBoard.textContent =
-        boardLabels[selectedBoard.value] ?? 'Board Size';
+    if (SELECTED_BOARD && SUMMARY_BOARD) {
+      SUMMARY_BOARD.textContent =
+        BOARD_LABELS[SELECTED_BOARD.value] ?? 'Board Size';
     }
   }
 
-  const settingsInputs = document.querySelectorAll<HTMLInputElement>(
-    'input[name="card-theme"], input[name="player-color"], input[name="board-size"]'
-  );
+  const SETTINGS_INPUTS: NodeListOf<HTMLInputElement> =
+    document.querySelectorAll(
+      'input[name="card-theme"], input[name="player-color"], input[name="board-size"]'
+    );
 
-  settingsInputs.forEach((input) => {
-    input.addEventListener('change', updateSettingsPreview);
+  SETTINGS_INPUTS.forEach((input: HTMLInputElement): void => {
+    input.addEventListener('change', updateSettingsSummary);
   });
 
-  updateSettingsPreview();
+  updateSettingsSummary();
 }
