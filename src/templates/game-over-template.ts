@@ -385,9 +385,9 @@ export function renderGameOver(
   const RESULT_COLOR: ResultColor = getResultColor(WINNER, playerColor);
 
   return `
-    <main class="game-over" data-theme="${theme}" data-result="${RESULT_COLOR}">
+    <div class="game-over" data-theme="${theme}" data-result="${RESULT_COLOR}">
       ${renderGameOverIntro(state, gameMode)}
       ${renderGameOverOutcome(WINNER, gameMode, theme, RESULT_COLOR)}
-    </main>
+    </div>
   `;
 }

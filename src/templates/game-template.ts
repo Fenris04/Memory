@@ -217,10 +217,10 @@ export function renderGame(
   state: GameState
 ): string {
   return `
-    <main class="game" data-theme="${settings.theme}">
+    <div class="game" data-theme="${settings.theme}">
       ${renderGameHeader(settings, state)}
       ${renderGameBoard(cards, settings)}
       ${renderExitDialog(settings.theme)}
-    </main>
+    </div>
   `;
 }

@@ -122,9 +122,9 @@ function renderHomeDecoration(): string {
  */
 export function renderHome(): string {
   return `
-    <main class="home">
+    <div class="home">
       ${renderHomeContent()}
       ${renderHomeDecoration()}
-    </main>
+    </div>
   `;
 }

@@ -303,7 +303,7 @@ function renderSettingsRight(): string {
  */
 export function renderSettings(): string {
   return `
-    <main class="settings">
+    <div class="settings">
       <div class="settings__container">
         <header class="settings__header">
           <h1 class="settings__title">Settings</h1>
@@ -314,7 +314,7 @@ export function renderSettings(): string {
           ${renderSettingsRight()}
         </div>
       </div>
-    </main>
+    </div>
   `;
 }
 

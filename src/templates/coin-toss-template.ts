@@ -42,7 +42,7 @@ function renderCoin(): string {
  */
 export function renderCoinToss(): string {
   return `
-    <main class="coin-toss" aria-label="Coin toss">
+    <div class="coin-toss" aria-label="Coin toss">
       <h1 class="coin-toss__title">Who starts?</h1>
 
       ${renderCoin()}
@@ -50,7 +50,7 @@ export function renderCoinToss(): string {
       <p class="coin-toss__message" role="status">
         Tossing a coin...
       </p>
-    </main>
+    </div>
   `;
 }
 
