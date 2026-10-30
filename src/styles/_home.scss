@@ -15,26 +15,17 @@
   background-color: #303030;
   color: #ffffff;
 
-  &__content {
+  &__hero {
     position: relative;
     z-index: 1;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-    max-width: 1440px;
-    margin: 0 auto;
-  }
-
-  &__hero {
     display: flex;
     flex-direction: column;
     align-items: center;
 
     width: fit-content;
-    max-width: 100%;
+    max-width: min(100%, 1440px);
+    margin: 0 auto;
   }
 
   &__text {

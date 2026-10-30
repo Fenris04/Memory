@@ -2,15 +2,15 @@
 @use 'variables' as *;
 
 .settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1280px);
+  justify-content: center;
+  align-content: start;
+
   min-height: 100dvh;
   padding: 48px 32px 64px;
   background-color: #ffffff;
   color: #303030;
-
-  &__container {
-    width: min(100%, 1280px);
-    margin: 0 auto;
-  }
 
   &__header {
     margin-bottom: 56px;
@@ -101,30 +101,30 @@
   }
 
   &__group-icon {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  margin-left: -44px;
-  margin-right: 8px;
-  vertical-align: middle;
-  object-fit: contain;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    margin-left: -44px;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: contain;
 
-  &--themes {
-    color: #ed00c7;
-  }
+    &--themes {
+      color: #ed00c7;
+    }
 
-  &--player {
-    color: #00d9b2;
-  }
+    &--player {
+      color: #00d9b2;
+    }
 
-  &--board {
-    color: #1644d9;
-  }
+    &--board {
+      color: #1644d9;
+    }
 
-  &--mode {
-    color: #303030;
+    &--mode {
+      color: #303030;
+    }
   }
-}
 
   &__option {
     position: relative;

@@ -34,22 +34,6 @@ function renderStartButton(): string {
 }
 
 /**
- * Creates the main content of the home screen.
- *
- * @returns The home content markup.
- */
-function renderHomeContent(): string {
-  return `
-    <div class="home__content">
-      <div class="home__hero">
-        ${renderHomeText()}
-        ${renderStartButton()}
-      </div>
-    </div>
-  `;
-}
-
-/**
  * Creates the outline of the decorative controller.
  *
  * @returns The controller outline SVG markup.
@@ -123,7 +107,10 @@ function renderHomeDecoration(): string {
 export function renderHome(): string {
   return `
     <div class="home">
-      ${renderHomeContent()}
+      <div class="home__hero">
+        ${renderHomeText()}
+        ${renderStartButton()}
+      </div>
       ${renderHomeDecoration()}
     </div>
   `;

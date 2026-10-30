@@ -29,11 +29,7 @@ const BOARD_LABELS: Record<string, string> = {
  * @param modifier - The icon modifier class.
  * @returns The heading markup.
  */
-function renderGroupHeading(
-  title: string,
-  icon: string,
-  modifier: string
-): string {
+function renderGroupHeading(title: string, icon: string, modifier: string): string {
   return `
     <legend class="settings__label">
       <img class="settings__group-icon ${modifier}"
@@ -53,13 +49,9 @@ function renderGroupHeading(
  * @returns The radio option markup.
  */
 function renderRadioOption(
-  name: string,
-  value: string,
-  label: string,
-  checked = false
+  name: string, value: string, label: string, checked = false
 ): string {
   const CHECKED_ATTRIBUTE: string = checked ? ' checked' : '';
-
   return `
     <label class="settings__option">
       <input type="radio" name="${name}" value="${value}"${CHECKED_ATTRIBUTE} />
@@ -191,10 +183,7 @@ function renderSettingsControls(): string {
  * @returns The preview image markup.
  */
 function renderPreviewImage(
-  theme: string,
-  source: string,
-  description: string,
-  active = false
+  theme: string, source: string, description: string, active = false
 ): string {
   const ACTIVE_CLASS: string = active ? ' is-active' : '';
   const HIDDEN_ATTRIBUTE: string = active ? '' : ' aria-hidden="true"';
@@ -304,15 +293,13 @@ function renderSettingsRight(): string {
 export function renderSettings(): string {
   return `
     <div class="settings">
-      <div class="settings__container">
-        <header class="settings__header">
-          <h1 class="settings__title">Settings</h1>
-          <div class="settings__title-decoration" aria-hidden="true"></div>
-        </header>
-        <div class="settings__layout">
-          ${renderSettingsControls()}
-          ${renderSettingsRight()}
-        </div>
+      <header class="settings__header">
+        <h1 class="settings__title">Settings</h1>
+        <div class="settings__title-decoration" aria-hidden="true"></div>
+      </header>
+      <div class="settings__layout">
+        ${renderSettingsControls()}
+        ${renderSettingsRight()}
       </div>
     </div>
   `;
